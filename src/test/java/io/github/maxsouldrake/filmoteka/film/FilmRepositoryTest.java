@@ -1,13 +1,12 @@
-package io.github.maxsouldrake.filmoteka.film.repository;
+package io.github.maxsouldrake.filmoteka.film;
 
 import io.github.maxsouldrake.filmoteka.config.RepositoryTestConfig;
-import io.github.maxsouldrake.filmoteka.film.Film;
-import io.github.maxsouldrake.filmoteka.film.FilmRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +20,12 @@ class FilmRepositoryTest {
 
     @Test
     void shouldSaveAndLoadFilm() {
-        Film film = new Film("test title", 2000, "test country");
+        Film film = Film.builder()
+                .title("test title")
+                .releaseYear(2000)
+                .country("test country")
+                .genres(Collections.emptySet())
+                .build();
 
         Film savedFilm = filmRepository.save(film);
         Optional<Film> loadedFilm = filmRepository.findById(savedFilm.getId());

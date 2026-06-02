@@ -11,25 +11,25 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import static lombok.AccessLevel.PRIVATE;
+
 @Getter
+@Builder
+@AllArgsConstructor(access = PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "film")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@RequiredArgsConstructor
 public class Film {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NonNull
     private String title;
 
-    @NonNull
     @Column(name = "release_year")
     private Integer releaseYear;
 
-    @NonNull
     private String country;
 
     @Enumerated(EnumType.STRING)
