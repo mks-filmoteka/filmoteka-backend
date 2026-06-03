@@ -15,6 +15,7 @@ import java.util.Optional;
 public class FilmService {
 
     private final FilmRepository filmRepository;
+    private final FilmMapper filmMapper;
 
     public List<Film> findAll() {
         return filmRepository.findAll();
@@ -27,28 +28,11 @@ public class FilmService {
     @Transactional
     public DetailedFilmResponse create(CreateFilmRequest request) {
 
-        Film film = Film.builder()
-                .title(request.title())
-                .releaseYear(request.releaseYear())
-                .country(request.country())
-                .description(request.description())
-                .posterUrl(request.posterUrl())
-                .genres(request.genres())
-                .build();
+        Film film = filmMapper.createFilmRequestToFilm(request);
 
         Film saved = filmRepository.save(film);
 
-        return new DetailedFilmResponse(
-                saved.getId(),
-                saved.getTitle(),
-                saved.getReleaseYear(),
-                saved.getCountry(),
-                saved.getDescription(),
-                saved.getPosterUrl(),
-                saved.getGenres(),
-                null,
-                null
-        );
+        return filmMapper.filmToDetailedFilmResponse(saved);
     }
 
     @Transactional
