@@ -19,6 +19,9 @@ class FilmServiceTest {
     @Mock
     private FilmRepository filmRepository;
 
+    @Mock
+    private FilmMapper filmMapper;
+
     @InjectMocks
     private FilmService filmService;
 
@@ -29,15 +32,30 @@ class FilmServiceTest {
                 2000,
                 "test country",
                 null, null, null, null, null);
+
+        Film film = Film.builder()
+                .title(request.title())
+                .releaseYear(request.releaseYear())
+                .country(request.country())
+                .build();
+
         Film savedFilm = Film.builder()
                 .id(1L)
                 .title(request.title())
                 .releaseYear(request.releaseYear())
                 .country(request.country())
-                .description(request.description())
-                .genres(request.genres())
                 .build();
 
+        DetailedFilmResponse filmResponse = new DetailedFilmResponse(
+                1L,
+                "test title",
+                2000,
+                "test country",
+                null, null, null, null, null
+        );
+
+        when(filmMapper.createFilmRequestToFilm(request)).thenReturn(film);
+        when(filmMapper.filmToDetailedFilmResponse(savedFilm)).thenReturn(filmResponse);
         when(filmRepository.save(any(Film.class))).thenReturn(savedFilm);
 
         DetailedFilmResponse response = filmService.create(request);
@@ -47,6 +65,8 @@ class FilmServiceTest {
         assertThat(response.releaseYear()).isEqualTo(2000);
         assertThat(response.country()).isEqualTo("test country");
 
-        verify(filmRepository).save(any(Film.class));
+        verify(filmMapper).createFilmRequestToFilm(request);
+        verify(filmRepository).save(film);
+        verify(filmMapper).filmToDetailedFilmResponse(savedFilm);
     }
 }
