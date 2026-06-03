@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -24,10 +25,12 @@ class FilmRepositoryTest {
                 .title("test title")
                 .releaseYear(2000)
                 .country("test country")
-                .genres(Collections.emptySet())
+                .description("test description")
+                .posterUrl("test url")
+                .genres(Set.of(Genre.ADVENTURE, Genre.ACTION))
                 .build();
 
-        Film savedFilm = filmRepository.save(film);
+        Film savedFilm = filmRepository.saveAndFlush(film);
         Optional<Film> loadedFilm = filmRepository.findById(savedFilm.getId());
 
         assertNotNull(savedFilm.getId());
@@ -35,5 +38,8 @@ class FilmRepositoryTest {
         assertEquals("test title", loadedFilm.get().getTitle());
         assertEquals(2000, loadedFilm.get().getReleaseYear());
         assertEquals("test country", loadedFilm.get().getCountry());
+        assertEquals("test description", loadedFilm.get().getDescription());
+        assertEquals("test url", loadedFilm.get().getPosterUrl());
+        assertThat(loadedFilm.get().getGenres()).containsExactlyInAnyOrder(Genre.ADVENTURE, Genre.ACTION);
     }
 }

@@ -32,7 +32,7 @@ public class Film {
 
     private String country;
 
-    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(100)[]")
     private Set<Genre> genres = new HashSet<>();
 
     @Column(columnDefinition = "text")

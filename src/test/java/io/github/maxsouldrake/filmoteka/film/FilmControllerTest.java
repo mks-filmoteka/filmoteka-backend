@@ -37,7 +37,7 @@ class FilmControllerTest {
                 2000,
                 "test country",
                 "test description",
-                "test url",
+                "http://test",
                 Set.of(Genre.ADVENTURE),
                 null,
                 null
@@ -49,7 +49,7 @@ class FilmControllerTest {
                 2000,
                 "test country",
                 "test description",
-                "test url",
+                "http://test",
                 Set.of(Genre.ADVENTURE),
                 null,
                 null
@@ -68,7 +68,7 @@ class FilmControllerTest {
                 .andExpect(jsonPath("$.releaseYear").value(2000))
                 .andExpect(jsonPath("$.country").value("test country"))
                 .andExpect(jsonPath("$.description").value("test description"))
-                .andExpect(jsonPath("$.posterUrl").value("test url"));
+                .andExpect(jsonPath("$.posterUrl").value("http://test"));
 
         verify(filmService).create(any(CreateFilmRequest.class));
 
