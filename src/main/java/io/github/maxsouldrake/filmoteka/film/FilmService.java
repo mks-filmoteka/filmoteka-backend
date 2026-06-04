@@ -1,5 +1,6 @@
 package io.github.maxsouldrake.filmoteka.film;
 
+import io.github.maxsouldrake.filmoteka.actor.ActorService;
 import io.github.maxsouldrake.filmoteka.film.dto.CreateFilmRequest;
 import io.github.maxsouldrake.filmoteka.film.dto.DetailedFilmResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class FilmService {
 
     private final FilmRepository filmRepository;
+    private final ActorService actorService;
     private final FilmMapper filmMapper;
 
     public List<Film> findAll() {
@@ -29,6 +31,10 @@ public class FilmService {
     public DetailedFilmResponse create(CreateFilmRequest request) {
 
         Film film = filmMapper.createFilmRequestToFilm(request);
+
+        request.actors().stream()
+                .map(actorService::findOrCreate)
+                .forEach(film::addActor);
 
         Film saved = filmRepository.save(film);
 

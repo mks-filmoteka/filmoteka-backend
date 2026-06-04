@@ -33,6 +33,7 @@ public class Film {
     private String country;
 
     @Column(columnDefinition = "VARCHAR(100)[]")
+    @Builder.Default
     private Set<Genre> genres = new HashSet<>();
 
     @Column(columnDefinition = "text")
@@ -55,6 +56,7 @@ public class Film {
             joinColumns = @JoinColumn(name = "film_id"),
             inverseJoinColumns = @JoinColumn(name = "actor_id")
     )
+    @Builder.Default
     private Set<Actor> actors = new HashSet<>();
 
     @ManyToMany
@@ -63,10 +65,19 @@ public class Film {
             joinColumns = @JoinColumn(name = "film_id"),
             inverseJoinColumns = @JoinColumn(name = "director_id")
     )
+    @Builder.Default
     private Set<Director> directors = new HashSet<>();
 
     @PreUpdate
     public void preUpdate() {
         updatedTs = LocalDateTime.now();
+    }
+
+    public void addActor(Actor actor) {
+        actors.add(actor);
+    }
+
+    public void removeActor(Actor actor) {
+        actors.remove(actor);
     }
 }

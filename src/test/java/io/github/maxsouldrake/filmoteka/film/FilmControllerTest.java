@@ -1,6 +1,8 @@
 package io.github.maxsouldrake.filmoteka.film;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.maxsouldrake.filmoteka.actor.dto.ActorRequest;
+import io.github.maxsouldrake.filmoteka.actor.dto.ActorResponse;
 import io.github.maxsouldrake.filmoteka.film.dto.CreateFilmRequest;
 import io.github.maxsouldrake.filmoteka.film.dto.DetailedFilmResponse;
 import org.junit.jupiter.api.Test;
@@ -39,7 +41,7 @@ class FilmControllerTest {
                 "test description",
                 "http://test",
                 Set.of(Genre.ADVENTURE),
-                null,
+                Set.of(new ActorRequest("test name")),
                 null
         );
 
@@ -51,7 +53,7 @@ class FilmControllerTest {
                 "test description",
                 "http://test",
                 Set.of(Genre.ADVENTURE),
-                null,
+                Set.of(new ActorResponse(1L, "test name")),
                 null
         );
 
@@ -68,7 +70,8 @@ class FilmControllerTest {
                 .andExpect(jsonPath("$.releaseYear").value(2000))
                 .andExpect(jsonPath("$.country").value("test country"))
                 .andExpect(jsonPath("$.description").value("test description"))
-                .andExpect(jsonPath("$.posterUrl").value("http://test"));
+                .andExpect(jsonPath("$.posterUrl").value("http://test"))
+                .andExpect(jsonPath("$.actors[0].name").value("test name"));
 
         verify(filmService).create(any(CreateFilmRequest.class));
 

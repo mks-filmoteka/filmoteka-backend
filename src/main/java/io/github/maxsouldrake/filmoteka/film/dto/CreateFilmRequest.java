@@ -34,7 +34,9 @@ public record CreateFilmRequest(
         @Size(max = 5)
         Set<@NotNull Genre> genres,
 
-        Set<ActorRequest> actors,
+        @NotEmpty
+        @Size(max = 20)
+        Set<@NotNull ActorRequest> actors,
 
         Set<DirectorRequest> directors
 ) {

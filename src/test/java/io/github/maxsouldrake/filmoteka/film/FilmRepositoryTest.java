@@ -26,7 +26,7 @@ class FilmRepositoryTest {
                 .releaseYear(2000)
                 .country("test country")
                 .description("test description")
-                .posterUrl("test url")
+                .posterUrl("http://test")
                 .genres(Set.of(Genre.ADVENTURE, Genre.ACTION))
                 .build();
 
@@ -39,7 +39,7 @@ class FilmRepositoryTest {
         assertEquals(2000, loadedFilm.get().getReleaseYear());
         assertEquals("test country", loadedFilm.get().getCountry());
         assertEquals("test description", loadedFilm.get().getDescription());
-        assertEquals("test url", loadedFilm.get().getPosterUrl());
+        assertEquals("http://test", loadedFilm.get().getPosterUrl());
         assertThat(loadedFilm.get().getGenres()).containsExactlyInAnyOrder(Genre.ADVENTURE, Genre.ACTION);
     }
 }

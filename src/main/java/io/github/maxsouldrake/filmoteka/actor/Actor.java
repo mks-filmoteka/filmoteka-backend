@@ -34,6 +34,7 @@ public class Actor {
     private LocalDateTime updatedTs;
 
     @ManyToMany(mappedBy = "actors")
+    @Builder.Default
     private Set<Film> films = new HashSet<>();
 
     @PreUpdate

@@ -20,7 +20,7 @@ class FilmMapperTest {
                 2000,
                 "test country",
                 "test description",
-                "test url",
+                "http://test",
                 Set.of(Genre.ADVENTURE),
                 null,
                 null
@@ -32,7 +32,7 @@ class FilmMapperTest {
         assertThat(film.getReleaseYear()).isEqualTo(2000);
         assertThat(film.getCountry()).isEqualTo("test country");
         assertThat(film.getDescription()).isEqualTo("test description");
-        assertThat(film.getPosterUrl()).isEqualTo("test url");
+        assertThat(film.getPosterUrl()).isEqualTo("http://test");
         assertThat(film.getGenres()).contains(Genre.ADVENTURE);
     }
 
@@ -44,7 +44,7 @@ class FilmMapperTest {
                 .releaseYear(2000)
                 .country("test country")
                 .description("test description")
-                .posterUrl("test url")
+                .posterUrl("http://test")
                 .genres(Set.of(Genre.ADVENTURE))
                 .build();
 
@@ -55,7 +55,7 @@ class FilmMapperTest {
         assertThat(response.releaseYear()).isEqualTo(2000);
         assertThat(response.country()).isEqualTo("test country");
         assertThat(response.description()).isEqualTo("test description");
-        assertThat(response.posterUrl()).isEqualTo("test url");
+        assertThat(response.posterUrl()).isEqualTo("http://test");
         assertThat(response.genres()).contains(Genre.ADVENTURE);
     }
 }
