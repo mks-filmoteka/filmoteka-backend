@@ -18,7 +18,9 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor(access = PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "film")
+@Table(name = "film", uniqueConstraints = @UniqueConstraint(
+        columnNames = {"title", "release_year"}
+))
 public class Film {
 
     @Id

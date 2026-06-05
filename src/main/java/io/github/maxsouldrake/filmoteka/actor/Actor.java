@@ -15,14 +15,13 @@ import java.util.Set;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "actor")
+@Table(name = "actor", uniqueConstraints = @UniqueConstraint(columnNames = {"name"}))
 public class Actor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NonNull
     private String name;
 
     @CreationTimestamp
