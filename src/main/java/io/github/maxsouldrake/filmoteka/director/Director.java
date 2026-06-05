@@ -11,10 +11,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "director")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@RequiredArgsConstructor
 public class Director {
 
     @Id
@@ -33,5 +34,11 @@ public class Director {
     private LocalDateTime updatedTs;
 
     @ManyToMany(mappedBy = "directors")
+    @Builder.Default
     private Set<Film> films = new HashSet<>();
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedTs = LocalDateTime.now();
+    }
 }

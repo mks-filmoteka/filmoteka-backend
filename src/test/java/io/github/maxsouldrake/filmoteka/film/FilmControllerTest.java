@@ -3,6 +3,8 @@ package io.github.maxsouldrake.filmoteka.film;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.maxsouldrake.filmoteka.actor.dto.ActorRequest;
 import io.github.maxsouldrake.filmoteka.actor.dto.ActorResponse;
+import io.github.maxsouldrake.filmoteka.director.dto.DirectorRequest;
+import io.github.maxsouldrake.filmoteka.director.dto.DirectorResponse;
 import io.github.maxsouldrake.filmoteka.film.dto.CreateFilmRequest;
 import io.github.maxsouldrake.filmoteka.film.dto.DetailedFilmResponse;
 import org.junit.jupiter.api.Test;
@@ -41,8 +43,8 @@ class FilmControllerTest {
                 "test description",
                 "http://test",
                 Set.of(Genre.ADVENTURE),
-                Set.of(new ActorRequest("test name")),
-                null
+                Set.of(new ActorRequest("actor name")),
+                Set.of(new DirectorRequest("director name"))
         );
 
         DetailedFilmResponse response = new DetailedFilmResponse(
@@ -53,8 +55,8 @@ class FilmControllerTest {
                 "test description",
                 "http://test",
                 Set.of(Genre.ADVENTURE),
-                Set.of(new ActorResponse(1L, "test name")),
-                null
+                Set.of(new ActorResponse(1L, "actor name")),
+                Set.of(new DirectorResponse(1L, "director name"))
         );
 
         when(filmService.create(any(CreateFilmRequest.class))).thenReturn(response);
@@ -71,10 +73,9 @@ class FilmControllerTest {
                 .andExpect(jsonPath("$.country").value("test country"))
                 .andExpect(jsonPath("$.description").value("test description"))
                 .andExpect(jsonPath("$.posterUrl").value("http://test"))
-                .andExpect(jsonPath("$.actors[0].name").value("test name"));
+                .andExpect(jsonPath("$.actors[0].name").value("actor name"))
+                .andExpect(jsonPath("$.directors[0].name").value("director name"));
 
         verify(filmService).create(any(CreateFilmRequest.class));
-
-
     }
 }

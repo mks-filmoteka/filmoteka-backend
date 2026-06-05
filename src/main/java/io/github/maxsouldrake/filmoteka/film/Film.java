@@ -32,6 +32,7 @@ public class Film {
 
     private String country;
 
+    @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(100)[]")
     @Builder.Default
     private Set<Genre> genres = new HashSet<>();
@@ -75,9 +76,19 @@ public class Film {
 
     public void addActor(Actor actor) {
         actors.add(actor);
+        actor.getFilms().add(this);
     }
 
     public void removeActor(Actor actor) {
         actors.remove(actor);
+    }
+
+    public void addDirector(Director director) {
+        directors.add(director);
+        director.getFilms().add(this);
+    }
+
+    public void removeDirector(Director director) {
+        directors.remove(director);
     }
 }

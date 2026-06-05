@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 public interface FilmMapper {
 
     @Mapping(target = "actors", ignore = true)
+    @Mapping(target = "directors", ignore = true)
     Film createFilmRequestToFilm(CreateFilmRequest request);
     Film updateFilmRequestToFilm(UpdateFilmRequest request);
     BasicFilmResponse filmToBasicFilmResponse(Film film);
