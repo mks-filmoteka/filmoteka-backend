@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import static io.github.maxsouldrake.filmoteka.testdata.ActorTestData.ACTOR_NAME;
@@ -35,7 +36,7 @@ class FilmControllerTest {
 
     @Test
     void shouldCreateFilm() throws Exception {
-        when(filmService.create(any(CreateFilmRequest.class))).thenReturn(detailedFilmResponse());
+        when(filmService.create(any(CreateFilmRequest.class))).thenReturn(detailedFilmResponseFull());
 
         mockMvc.perform(
                 post("/api/v1/films")
@@ -57,7 +58,7 @@ class FilmControllerTest {
 
     @Test
     void shouldFindFilmById() throws Exception {
-        when(filmService.findById(FILM_ID)).thenReturn(detailedFilmResponse());
+        when(filmService.findById(FILM_ID)).thenReturn(detailedFilmResponseFull());
 
         mockMvc.perform(get("/api/v1/films/{id}", FILM_ID))
                 .andExpect(status().isOk())
@@ -73,5 +74,28 @@ class FilmControllerTest {
         when(filmService.findById(FILM_ID)).thenThrow(new NoSuchElementException());
 
         mockMvc.perform(get("/films/{id}", FILM_ID)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturnFilms() throws Exception {
+        when(filmService.findAll()).thenReturn(List.of(filmResponse()));
+
+        mockMvc.perform(get("/api/v1/films"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].title").value("film title"));
+
+        verify(filmService).findAll();
+    }
+
+    @Test
+    void shouldReturnEmptyList() throws Exception {
+        when(filmService.findAll()).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/v1/films"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+
+        verify(filmService).findAll();
     }
 }

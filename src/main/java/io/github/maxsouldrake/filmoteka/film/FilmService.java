@@ -4,6 +4,7 @@ import io.github.maxsouldrake.filmoteka.actor.ActorService;
 import io.github.maxsouldrake.filmoteka.director.DirectorService;
 import io.github.maxsouldrake.filmoteka.film.dto.CreateFilmRequest;
 import io.github.maxsouldrake.filmoteka.film.dto.DetailedFilmResponse;
+import io.github.maxsouldrake.filmoteka.film.dto.FilmResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +21,8 @@ public class FilmService {
     private final DirectorService directorService;
     private final FilmMapper filmMapper;
 
-    public List<Film> findAll() {
-        return filmRepository.findAll();
+    public List<FilmResponse> findAll() {
+        return filmMapper.filmsToFilmResponses(filmRepository.findAll());
     }
 
     public DetailedFilmResponse findById(Long id) {

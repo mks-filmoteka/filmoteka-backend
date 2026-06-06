@@ -4,6 +4,7 @@ import io.github.maxsouldrake.filmoteka.film.Film;
 import io.github.maxsouldrake.filmoteka.film.Genre;
 import io.github.maxsouldrake.filmoteka.film.dto.CreateFilmRequest;
 import io.github.maxsouldrake.filmoteka.film.dto.DetailedFilmResponse;
+import io.github.maxsouldrake.filmoteka.film.dto.FilmResponse;
 
 import java.util.Set;
 
@@ -79,8 +80,31 @@ public class FilmTestData {
                 FILM_DESCRIPTION,
                 FILM_POSTER_URL,
                 Set.of(Genre.ADVENTURE, Genre.ACTION),
+                Set.of(),
+                Set.of()
+        );
+    }
+
+    public static DetailedFilmResponse detailedFilmResponseFull() {
+        return new DetailedFilmResponse(
+                FILM_ID,
+                FILM_TITLE,
+                RELEASE_YEAR,
+                FILM_COUNTRY,
+                FILM_DESCRIPTION,
+                FILM_POSTER_URL,
+                Set.of(Genre.ADVENTURE, Genre.ACTION),
                 Set.of(actorResponse()),
                 Set.of(directorResponse())
+        );
+    }
+
+    public static FilmResponse filmResponse() {
+        return new FilmResponse(
+                FILM_ID,
+                FILM_TITLE,
+                RELEASE_YEAR,
+                FILM_POSTER_URL
         );
     }
 }

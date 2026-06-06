@@ -1,6 +1,7 @@
 package io.github.maxsouldrake.filmoteka.film;
 
 import io.github.maxsouldrake.filmoteka.film.dto.DetailedFilmResponse;
+import io.github.maxsouldrake.filmoteka.film.dto.FilmResponse;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -27,12 +28,13 @@ class FilmMapperTest {
     void shouldMapFilmToDetailedFilmResponse() {
         DetailedFilmResponse response = filmMapper.filmToDetailedFilmResponse(loadedFilm());
 
-        assertThat(response.id()).isEqualTo(FILM_ID);
-        assertThat(response.title()).isEqualTo(FILM_TITLE);
-        assertThat(response.releaseYear()).isEqualTo(RELEASE_YEAR);
-        assertThat(response.country()).isEqualTo(FILM_COUNTRY);
-        assertThat(response.description()).isEqualTo(FILM_DESCRIPTION);
-        assertThat(response.posterUrl()).isEqualTo(FILM_POSTER_URL);
-        assertThat(response.genres()).containsExactlyInAnyOrder(Genre.ADVENTURE, Genre.ACTION);
+        assertThat(response).isEqualTo(detailedFilmResponse());
+    }
+
+    @Test
+    void shouldMapFilmToFilmResponse() {
+        FilmResponse response = filmMapper.filmToFilmResponse(loadedFilm());
+
+        assertThat(response).isEqualTo(filmResponse());
     }
 }
