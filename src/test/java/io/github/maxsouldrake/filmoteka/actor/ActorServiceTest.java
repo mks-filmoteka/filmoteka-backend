@@ -1,6 +1,5 @@
 package io.github.maxsouldrake.filmoteka.actor;
 
-import io.github.maxsouldrake.filmoteka.actor.dto.ActorRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static io.github.maxsouldrake.filmoteka.testdata.ActorTestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -25,23 +25,23 @@ class ActorServiceTest {
 
     @Test
     void shouldNotCreateActorIfFound() {
-        ActorRequest request = new ActorRequest("test name");
-        Actor existingActor = Actor.builder().id(1L).name("test name").build();
-        when(actorRepository.findByName("test name")).thenReturn(Optional.of(existingActor));
-        Actor actor = actorService.findOrCreate(request);
-        assertThat(actor).isEqualTo(existingActor);
+        Actor loadedActor = loadedActor();
+        when(actorRepository.findByName(ACTOR_NAME)).thenReturn(Optional.of(loadedActor));
+
+        Actor actor = actorService.findOrCreate(actorRequest());
+        assertThat(actor).isEqualTo(loadedActor);
         verify(actorRepository, never()).save(any());
     }
 
     @Test
     void shouldCreateActorIfNotFound() {
-        ActorRequest request = new ActorRequest("test name");
-        when(actorRepository.findByName("test name")).thenReturn(Optional.empty());
-        Actor mappedActor = Actor.builder().name("test name").build();
-        when(actorMapper.actorRequestToActor(request)).thenReturn(mappedActor);
-        when(actorRepository.save(mappedActor)).thenReturn(mappedActor);
-        Actor actor = actorService.findOrCreate(request);
-        assertThat(actor.getName()).isEqualTo("test name");
-        verify(actorRepository).save(mappedActor);
+        Actor actor = actor();
+        when(actorRepository.findByName(ACTOR_NAME)).thenReturn(Optional.empty());
+        when(actorMapper.actorRequestToActor(actorRequest())).thenReturn(actor);
+        when(actorRepository.save(actor)).thenReturn(loadedActor());
+
+        Actor loadedActor = actorService.findOrCreate(actorRequest());
+        assertThat(loadedActor.getName()).isEqualTo(ACTOR_NAME);
+        verify(actorRepository).save(actor);
     }
 }

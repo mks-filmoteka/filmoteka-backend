@@ -1,12 +1,7 @@
 package io.github.maxsouldrake.filmoteka.film;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.maxsouldrake.filmoteka.actor.dto.ActorRequest;
-import io.github.maxsouldrake.filmoteka.actor.dto.ActorResponse;
-import io.github.maxsouldrake.filmoteka.director.dto.DirectorRequest;
-import io.github.maxsouldrake.filmoteka.director.dto.DirectorResponse;
 import io.github.maxsouldrake.filmoteka.film.dto.CreateFilmRequest;
-import io.github.maxsouldrake.filmoteka.film.dto.DetailedFilmResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -14,8 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Set;
-
+import static io.github.maxsouldrake.filmoteka.testdata.ActorTestData.ACTOR_NAME;
+import static io.github.maxsouldrake.filmoteka.testdata.DirectorTestData.DIRECTOR_NAME;
+import static io.github.maxsouldrake.filmoteka.testdata.FilmTestData.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,45 +32,22 @@ class FilmControllerTest {
 
     @Test
     void shouldCreateFilm() throws Exception {
-        CreateFilmRequest request = new CreateFilmRequest(
-                "test title",
-                2000,
-                "test country",
-                "test description",
-                "http://test",
-                Set.of(Genre.ADVENTURE),
-                Set.of(new ActorRequest("actor name")),
-                Set.of(new DirectorRequest("director name"))
-        );
-
-        DetailedFilmResponse response = new DetailedFilmResponse(
-                1L,
-                "test title",
-                2000,
-                "test country",
-                "test description",
-                "http://test",
-                Set.of(Genre.ADVENTURE),
-                Set.of(new ActorResponse(1L, "actor name")),
-                Set.of(new DirectorResponse(1L, "director name"))
-        );
-
-        when(filmService.create(any(CreateFilmRequest.class))).thenReturn(response);
+        when(filmService.create(any(CreateFilmRequest.class))).thenReturn(detailedFilmResponse());
 
         mockMvc.perform(
                 post("/api/v1/films")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request))
+                        .content(objectMapper.writeValueAsString(createFilmRequestFull()))
                 )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.title").value("test title"))
-                .andExpect(jsonPath("$.releaseYear").value(2000))
-                .andExpect(jsonPath("$.country").value("test country"))
-                .andExpect(jsonPath("$.description").value("test description"))
-                .andExpect(jsonPath("$.posterUrl").value("http://test"))
-                .andExpect(jsonPath("$.actors[0].name").value("actor name"))
-                .andExpect(jsonPath("$.directors[0].name").value("director name"));
+                .andExpect(jsonPath("$.id").value(FILM_ID))
+                .andExpect(jsonPath("$.title").value(FILM_TITLE))
+                .andExpect(jsonPath("$.releaseYear").value(RELEASE_YEAR))
+                .andExpect(jsonPath("$.country").value(FILM_COUNTRY))
+                .andExpect(jsonPath("$.description").value(FILM_DESCRIPTION))
+                .andExpect(jsonPath("$.posterUrl").value(FILM_POSTER_URL))
+                .andExpect(jsonPath("$.actors[0].name").value(ACTOR_NAME))
+                .andExpect(jsonPath("$.directors[0].name").value(DIRECTOR_NAME));
 
         verify(filmService).create(any(CreateFilmRequest.class));
     }

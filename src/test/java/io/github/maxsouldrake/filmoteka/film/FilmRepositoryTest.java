@@ -7,8 +7,8 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import java.util.Optional;
-import java.util.Set;
 
+import static io.github.maxsouldrake.filmoteka.testdata.FilmTestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,25 +21,16 @@ class FilmRepositoryTest {
 
     @Test
     void shouldSaveAndLoadFilm() {
-        Film film = Film.builder()
-                .title("test title")
-                .releaseYear(2000)
-                .country("test country")
-                .description("test description")
-                .posterUrl("http://test")
-                .genres(Set.of(Genre.ADVENTURE, Genre.ACTION))
-                .build();
-
-        Film savedFilm = filmRepository.saveAndFlush(film);
+        Film savedFilm = filmRepository.saveAndFlush(film());
         Optional<Film> loadedFilm = filmRepository.findById(savedFilm.getId());
 
         assertNotNull(savedFilm.getId());
         assertTrue(loadedFilm.isPresent());
-        assertEquals("test title", loadedFilm.get().getTitle());
-        assertEquals(2000, loadedFilm.get().getReleaseYear());
-        assertEquals("test country", loadedFilm.get().getCountry());
-        assertEquals("test description", loadedFilm.get().getDescription());
-        assertEquals("http://test", loadedFilm.get().getPosterUrl());
+        assertEquals(FILM_TITLE, loadedFilm.get().getTitle());
+        assertEquals(RELEASE_YEAR, loadedFilm.get().getReleaseYear());
+        assertEquals(FILM_COUNTRY, loadedFilm.get().getCountry());
+        assertEquals(FILM_DESCRIPTION, loadedFilm.get().getDescription());
+        assertEquals(FILM_POSTER_URL, loadedFilm.get().getPosterUrl());
         assertThat(loadedFilm.get().getGenres()).containsExactlyInAnyOrder(Genre.ADVENTURE, Genre.ACTION);
     }
 }

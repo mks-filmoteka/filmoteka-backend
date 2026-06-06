@@ -1,6 +1,5 @@
 package io.github.maxsouldrake.filmoteka.director;
 
-import io.github.maxsouldrake.filmoteka.director.dto.DirectorRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static io.github.maxsouldrake.filmoteka.testdata.DirectorTestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -27,24 +27,24 @@ class DirectorServiceTest {
 
     @Test
     void shouldNotCreateDirectorIfFound() {
-        DirectorRequest request = new DirectorRequest("test name");
-        Director existingDirector = Director.builder().id(1L).name("test name").build();
-        when(directorRepository.findByName("test name")).thenReturn(Optional.of(existingDirector));
-        Director director = directorService.findOrCreate(request);
-        assertThat(director).isEqualTo(existingDirector);
+        Director loadedDirector = loadedDirector();
+        when(directorRepository.findByName(DIRECTOR_NAME)).thenReturn(Optional.of(loadedDirector));
+
+        Director director = directorService.findOrCreate(directorRequest());
+        assertThat(director).isEqualTo(loadedDirector);
         verify(directorRepository, never()).save(any());
     }
 
     @Test
     void shouldCreateDirectorIfNotFound() {
-        DirectorRequest request = new DirectorRequest("test name");
-        when(directorRepository.findByName("test name")).thenReturn(Optional.empty());
-        Director mappedDirector = Director.builder().name("test name").build();
-        when(directorMapper.directorRequestToDirector(request)).thenReturn(mappedDirector);
-        when(directorRepository.save(mappedDirector)).thenReturn(mappedDirector);
-        Director director = directorService.findOrCreate(request);
-        assertThat(director.getName()).isEqualTo("test name");
-        verify(directorRepository).save(mappedDirector);
+        Director director = director();
+        when(directorRepository.findByName(DIRECTOR_NAME)).thenReturn(Optional.empty());
+        when(directorMapper.directorRequestToDirector(directorRequest())).thenReturn(director);
+        when(directorRepository.save(director)).thenReturn(loadedDirector());
+
+        Director loadedDirector = directorService.findOrCreate(directorRequest());
+        assertThat(loadedDirector.getName()).isEqualTo(DIRECTOR_NAME);
+        verify(directorRepository).save(director);
     }
 
 }
