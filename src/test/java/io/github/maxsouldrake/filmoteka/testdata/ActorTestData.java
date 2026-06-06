@@ -3,6 +3,11 @@ package io.github.maxsouldrake.filmoteka.testdata;
 import io.github.maxsouldrake.filmoteka.actor.Actor;
 import io.github.maxsouldrake.filmoteka.actor.dto.ActorRequest;
 import io.github.maxsouldrake.filmoteka.actor.dto.ActorResponse;
+import io.github.maxsouldrake.filmoteka.actor.dto.DetailedActorResponse;
+
+import java.util.Set;
+
+import static io.github.maxsouldrake.filmoteka.testdata.FilmTestData.filmResponse;
 
 public class ActorTestData {
 
@@ -23,5 +28,13 @@ public class ActorTestData {
 
     public static ActorResponse actorResponse() {
         return new ActorResponse(ACTOR_ID, ACTOR_NAME);
+    }
+
+    public static DetailedActorResponse detailedActorResponse() {
+        return new DetailedActorResponse(
+                ACTOR_ID,
+                ACTOR_NAME,
+                Set.of(filmResponse())
+        );
     }
 }

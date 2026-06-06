@@ -1,8 +1,13 @@
 package io.github.maxsouldrake.filmoteka.testdata;
 
 import io.github.maxsouldrake.filmoteka.director.Director;
+import io.github.maxsouldrake.filmoteka.director.dto.DetailedDirectorResponse;
 import io.github.maxsouldrake.filmoteka.director.dto.DirectorRequest;
 import io.github.maxsouldrake.filmoteka.director.dto.DirectorResponse;
+
+import java.util.Set;
+
+import static io.github.maxsouldrake.filmoteka.testdata.FilmTestData.filmResponse;
 
 public class DirectorTestData {
 
@@ -23,5 +28,13 @@ public class DirectorTestData {
 
     public static DirectorResponse directorResponse() {
         return new DirectorResponse(DIRECTOR_ID, DIRECTOR_NAME);
+    }
+
+    public static DetailedDirectorResponse detailedDirectorResponse() {
+        return new DetailedDirectorResponse(
+                DIRECTOR_ID,
+                DIRECTOR_NAME,
+                Set.of(filmResponse())
+        );
     }
 }

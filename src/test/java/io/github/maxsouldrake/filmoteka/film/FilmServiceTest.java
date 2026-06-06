@@ -4,7 +4,6 @@ import io.github.maxsouldrake.filmoteka.actor.ActorService;
 import io.github.maxsouldrake.filmoteka.director.DirectorService;
 import io.github.maxsouldrake.filmoteka.film.dto.DetailedFilmResponse;
 import io.github.maxsouldrake.filmoteka.film.dto.FilmResponse;
-import io.github.maxsouldrake.filmoteka.testdata.FilmTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -69,7 +68,7 @@ class FilmServiceTest {
 
     @Test
     void shouldFindFilmByIdIfExists() {
-        Film loadedFilm = FilmTestData.loadedFilm();
+        Film loadedFilm = loadedFilm();
 
         when(filmRepository.findById(FILM_ID)).thenReturn(Optional.of(loadedFilm));
         when(filmMapper.filmToDetailedFilmResponse(loadedFilm)).thenReturn(detailedFilmResponseFull());

@@ -1,12 +1,10 @@
 package io.github.maxsouldrake.filmoteka.actor;
 
 import io.github.maxsouldrake.filmoteka.actor.dto.ActorRequest;
+import io.github.maxsouldrake.filmoteka.actor.dto.DetailedActorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,12 +14,9 @@ public class ActorService {
     private final ActorRepository actorRepository;
     private final ActorMapper actorMapper;
 
-    public List<Actor> findAll() {
-        return actorRepository.findAll();
-    }
-
-    public Optional<Actor> findById(Long id) {
-        return actorRepository.findById(id);
+    public DetailedActorResponse findById(Long id) {
+        Actor actor = actorRepository.findById(id).orElseThrow();
+        return actorMapper.actorToDetailedActorResponse(actor);
     }
 
     @Transactional
@@ -29,10 +24,5 @@ public class ActorService {
         return actorRepository.findByName(request.name()).orElseGet(
                 () -> actorRepository.save(actorMapper.actorRequestToActor(request))
         );
-    }
-
-    @Transactional
-    public void deleteById(Long id) {
-        actorRepository.deleteById(id);
     }
 }

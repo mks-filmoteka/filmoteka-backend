@@ -1,15 +1,18 @@
 package io.github.maxsouldrake.filmoteka.actor;
 
+import io.github.maxsouldrake.filmoteka.actor.dto.DetailedActorResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static io.github.maxsouldrake.filmoteka.testdata.ActorTestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,5 +46,29 @@ class ActorServiceTest {
         Actor loadedActor = actorService.findOrCreate(actorRequest());
         assertThat(loadedActor.getName()).isEqualTo(ACTOR_NAME);
         verify(actorRepository).save(actor);
+    }
+
+    @Test
+    void shouldFindActorByIdIfExists() {
+        Actor loadedActor = loadedActor();
+
+        when(actorRepository.findById(ACTOR_ID)).thenReturn(Optional.of(loadedActor));
+        when(actorMapper.actorToDetailedActorResponse(loadedActor)).thenReturn(detailedActorResponse());
+
+        DetailedActorResponse response = actorService.findById(ACTOR_ID);
+
+        assertThat(response).isEqualTo(detailedActorResponse());
+        verify(actorRepository).findById(ACTOR_ID);
+        verify(actorMapper).actorToDetailedActorResponse(loadedActor);
+    }
+
+    @Test
+    void shouldThrowIfDoesNotExist() {
+        when(actorRepository.findById(ACTOR_ID)).thenReturn(Optional.empty());
+
+        assertThrows(NoSuchElementException.class, () -> actorService.findById(ACTOR_ID));
+
+        verify(actorRepository).findById(ACTOR_ID);
+        verifyNoInteractions(actorMapper);
     }
 }

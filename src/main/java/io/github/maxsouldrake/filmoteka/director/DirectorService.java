@@ -1,12 +1,10 @@
 package io.github.maxsouldrake.filmoteka.director;
 
+import io.github.maxsouldrake.filmoteka.director.dto.DetailedDirectorResponse;
 import io.github.maxsouldrake.filmoteka.director.dto.DirectorRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,12 +14,9 @@ public class DirectorService {
     private final DirectorRepository directorRepository;
     private final DirectorMapper directorMapper;
 
-    public List<Director> findAll() {
-        return directorRepository.findAll();
-    }
-
-    public Optional<Director> findById(Long id) {
-        return directorRepository.findById(id);
+    public DetailedDirectorResponse findById(Long id) {
+        Director director = directorRepository.findById(id).orElseThrow();
+        return directorMapper.directorToDetailedDirectorResponse(director);
     }
 
     @Transactional
@@ -29,10 +24,5 @@ public class DirectorService {
         return directorRepository.findByName(request.name()).orElseGet(
                 () -> directorRepository.save(directorMapper.directorRequestToDirector(request))
         );
-    }
-
-    @Transactional
-    public void deleteById(Long id) {
-        directorRepository.deleteById(id);
     }
 }

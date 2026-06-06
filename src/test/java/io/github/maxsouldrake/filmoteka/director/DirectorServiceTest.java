@@ -1,15 +1,18 @@
 package io.github.maxsouldrake.filmoteka.director;
 
+import io.github.maxsouldrake.filmoteka.director.dto.DetailedDirectorResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static io.github.maxsouldrake.filmoteka.testdata.DirectorTestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -47,4 +50,27 @@ class DirectorServiceTest {
         verify(directorRepository).save(director);
     }
 
+    @Test
+    void shouldFindDirectorByIdIfExists() {
+        Director loadedDirector = loadedDirector();
+
+        when(directorRepository.findById(DIRECTOR_ID)).thenReturn(Optional.of(loadedDirector));
+        when(directorMapper.directorToDetailedDirectorResponse(loadedDirector)).thenReturn(detailedDirectorResponse());
+
+        DetailedDirectorResponse response = directorService.findById(DIRECTOR_ID);
+
+        assertThat(response).isEqualTo(detailedDirectorResponse());
+        verify(directorRepository).findById(DIRECTOR_ID);
+        verify(directorMapper).directorToDetailedDirectorResponse(loadedDirector);
+    }
+
+    @Test
+    void shouldThrowIfDoesNotExist() {
+        when(directorRepository.findById(DIRECTOR_ID)).thenReturn(Optional.empty());
+
+        assertThrows(NoSuchElementException.class, () -> directorService.findById(DIRECTOR_ID));
+
+        verify(directorRepository).findById(DIRECTOR_ID);
+        verifyNoInteractions(directorMapper);
+    }
 }
