@@ -26,4 +26,13 @@ class ActorMapperTest {
 
         assertThat(response).isEqualTo(actorResponse());
     }
+
+    @Test
+    void shouldMapUpdateActorRequestToActor() {
+        Actor actor = loadedActor();
+
+        actorMapper.updateActorRequestToActor(updateActorRequest(), actor);
+
+        assertThat(actor.getName()).isEqualTo("updated name");
+    }
 }

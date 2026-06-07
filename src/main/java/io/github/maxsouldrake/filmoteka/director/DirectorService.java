@@ -25,4 +25,14 @@ public class DirectorService {
                 () -> directorRepository.save(directorMapper.directorRequestToDirector(request))
         );
     }
+
+    @Transactional
+    public DetailedDirectorResponse updateDirector(Long id, DirectorRequest request) {
+        Director director = directorRepository.findById(id).orElseThrow();
+        directorMapper.updateDirectorRequestToDirector(request, director);
+
+        Director saved = directorRepository.save(director);
+
+        return directorMapper.directorToDetailedDirectorResponse(saved);
+    }
 }

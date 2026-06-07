@@ -1,12 +1,11 @@
 package io.github.maxsouldrake.filmoteka.director;
 
 import io.github.maxsouldrake.filmoteka.director.dto.DetailedDirectorResponse;
+import io.github.maxsouldrake.filmoteka.director.dto.DirectorRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/directors")
@@ -18,6 +17,15 @@ public class DirectorController {
     @GetMapping("/{id}")
     public ResponseEntity<DetailedDirectorResponse> getDirector(@PathVariable Long id) {
         DetailedDirectorResponse response = directorService.findById(id);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<DetailedDirectorResponse> updateDirector(
+            @PathVariable Long id,
+            @RequestBody @Valid DirectorRequest request) {
+        DetailedDirectorResponse response = directorService.updateDirector(id, request);
 
         return ResponseEntity.ok(response);
     }

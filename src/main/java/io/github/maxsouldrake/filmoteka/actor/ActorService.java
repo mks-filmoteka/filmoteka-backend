@@ -25,4 +25,14 @@ public class ActorService {
                 () -> actorRepository.save(actorMapper.actorRequestToActor(request))
         );
     }
+
+    @Transactional
+    public DetailedActorResponse updateActor(Long id, ActorRequest request) {
+        Actor actor = actorRepository.findById(id).orElseThrow();
+        actorMapper.updateActorRequestToActor(request, actor);
+
+        Actor saved = actorRepository.save(actor);
+
+        return actorMapper.actorToDetailedActorResponse(saved);
+    }
 }

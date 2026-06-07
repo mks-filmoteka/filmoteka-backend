@@ -28,6 +28,10 @@ public class DirectorTestData {
         return new DirectorRequest(DIRECTOR_NAME);
     }
 
+    public static DirectorRequest updateDirectorRequest() {
+        return new DirectorRequest("updated name");
+    }
+
     public static DirectorResponse directorResponse() {
         return new DirectorResponse(DIRECTOR_ID, DIRECTOR_NAME);
     }

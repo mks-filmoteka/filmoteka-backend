@@ -24,4 +24,13 @@ class DirectorMapperTest {
 
         assertThat(response).isEqualTo(directorResponse());
     }
+
+    @Test
+    void shouldMapUpdateDirectorRequestToDirector() {
+        Director director = loadedDirector();
+
+        directorMapper.updateDirectorRequestToDirector(updateDirectorRequest(), director);
+
+        assertThat(director.getName()).isEqualTo("updated name");
+    }
 }

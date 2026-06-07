@@ -1,11 +1,14 @@
 package io.github.maxsouldrake.filmoteka.director;
 
 import io.github.maxsouldrake.filmoteka.director.dto.DetailedDirectorResponse;
+import io.github.maxsouldrake.filmoteka.director.dto.DirectorRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -72,5 +75,38 @@ class DirectorServiceTest {
 
         verify(directorRepository).findById(DIRECTOR_ID);
         verifyNoInteractions(directorMapper);
+    }
+
+    @Test
+    void shouldUpdateDirectorIfExists() {
+        Director loadedDirector = loadedDirector();
+        loadedDirector.setName("old name");
+
+        when(directorRepository.findById(DIRECTOR_ID)).thenReturn(Optional.of(loadedDirector));
+
+        doAnswer(updateNameOnly()).when(directorMapper).updateDirectorRequestToDirector(any(), any());
+
+        when(directorRepository.save(any(Director.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(directorMapper.directorToDetailedDirectorResponse(any(Director.class))).thenReturn(detailedDirectorResponse());
+
+        DetailedDirectorResponse response = directorService.updateDirector(DIRECTOR_ID, directorRequest());
+
+        assertThat(response).isEqualTo(detailedDirectorResponse());
+        ArgumentCaptor<Director> captor = ArgumentCaptor.forClass(Director.class);
+
+        verify(directorRepository).save(captor.capture());
+        assertThat(captor.getValue().getName()).isEqualTo(DIRECTOR_NAME);
+        verify(directorMapper).updateDirectorRequestToDirector(directorRequest(), loadedDirector);
+        verify(directorMapper).directorToDetailedDirectorResponse(any(Director.class));
+    }
+
+    private static Answer<Void> updateNameOnly() {
+        return invocation -> {
+            DirectorRequest request = invocation.getArgument(0);
+            Director director = invocation.getArgument(1);
+            director.setName(request.name());
+            return null;
+        };
     }
 }

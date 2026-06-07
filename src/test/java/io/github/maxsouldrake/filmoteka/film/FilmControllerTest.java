@@ -1,6 +1,5 @@
 package io.github.maxsouldrake.filmoteka.film;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.maxsouldrake.filmoteka.film.dto.FilmRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import java.util.NoSuchElementException;
 import static io.github.maxsouldrake.filmoteka.actor.ActorTestData.ACTOR_NAME;
 import static io.github.maxsouldrake.filmoteka.director.DirectorTestData.DIRECTOR_NAME;
 import static io.github.maxsouldrake.filmoteka.film.FilmTestData.*;
+import static io.github.maxsouldrake.filmoteka.util.TestUtil.OBJECT_MAPPER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -32,8 +32,6 @@ class FilmControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-
     @Test
     void shouldCreateFilm() throws Exception {
         when(filmService.createFilm(any(FilmRequest.class))).thenReturn(detailedFilmResponseFull());
@@ -41,7 +39,7 @@ class FilmControllerTest {
         mockMvc.perform(
                 post("/api/v1/films")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(filmRequestFull()))
+                        .content(OBJECT_MAPPER.writeValueAsString(filmRequestFull()))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(FILM_ID))
@@ -106,7 +104,7 @@ class FilmControllerTest {
         mockMvc.perform(
                         put("/api/v1/films/{id}", FILM_ID)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(filmRequestFull()))
+                                .content(OBJECT_MAPPER.writeValueAsString(filmRequestFull()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(FILM_ID))

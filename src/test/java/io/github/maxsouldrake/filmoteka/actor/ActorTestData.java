@@ -28,6 +28,10 @@ public class ActorTestData {
         return new ActorRequest(ACTOR_NAME);
     }
 
+    public static ActorRequest updateActorRequest() {
+        return new ActorRequest("updated name");
+    }
+
     public static ActorResponse actorResponse() {
         return new ActorResponse(ACTOR_ID, ACTOR_NAME);
     }
