@@ -3,12 +3,15 @@ package io.github.maxsouldrake.filmoteka.film;
 import io.github.maxsouldrake.filmoteka.actor.ActorService;
 import io.github.maxsouldrake.filmoteka.director.DirectorService;
 import io.github.maxsouldrake.filmoteka.film.dto.DetailedFilmResponse;
+import io.github.maxsouldrake.filmoteka.film.dto.FilmRequest;
 import io.github.maxsouldrake.filmoteka.film.dto.FilmResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -43,7 +46,7 @@ class FilmServiceTest {
     private FilmService filmService;
 
     @Test
-    void shouldCreateFilmFilm() {
+    void shouldCreateFilm() {
         Film film = film();
         Film loadedFilm = loadedFilm();
         loadedFilm.addActor(loadedActor());
@@ -115,5 +118,42 @@ class FilmServiceTest {
 
         verify(filmRepository).findAll();
         verify(filmMapper).filmsToFilmResponses(List.of());
+    }
+
+    @Test
+    void shouldUpdateFilmIfExists() {
+        Film loadedFilm = loadedFilm();
+        loadedFilm.setTitle("old title");
+
+        when(filmRepository.findById(FILM_ID)).thenReturn(Optional.of(loadedFilm));
+        when(actorService.findOrCreate(any())).thenReturn(loadedActor());
+        when(directorService.findOrCreate(any())).thenReturn(loadedDirector());
+
+        doAnswer(updateTitleOnly()).when(filmMapper).updateFilmRequestToFilm(any(), any());
+
+        when(filmRepository.save(any(Film.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(filmMapper.filmToDetailedFilmResponse(any(Film.class))).thenReturn(detailedFilmResponseFull());
+
+        DetailedFilmResponse response = filmService.updateFilm(FILM_ID, filmRequestFull());
+
+        assertThat(response).isEqualTo(detailedFilmResponseFull());
+        ArgumentCaptor<Film> captor = ArgumentCaptor.forClass(Film.class);
+
+        verify(filmRepository).save(captor.capture());
+        assertThat(captor.getValue().getTitle()).isEqualTo(FILM_TITLE);
+        verify(filmMapper).updateFilmRequestToFilm(filmRequestFull(), loadedFilm);
+        verify(actorService).findOrCreate(actorRequest());
+        verify(directorService).findOrCreate(directorRequest());
+        verify(filmMapper).filmToDetailedFilmResponse(any(Film.class));
+    }
+
+    private static Answer<Void> updateTitleOnly() {
+        return invocation -> {
+            FilmRequest request = invocation.getArgument(0);
+            Film film = invocation.getArgument(1);
+            film.setTitle(request.title());
+            return null;
+        };
     }
 }

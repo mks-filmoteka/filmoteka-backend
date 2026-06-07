@@ -48,6 +48,26 @@ public class FilmService {
     }
 
     @Transactional
+    public DetailedFilmResponse updateFilm(Long id, FilmRequest request) {
+        Film film = filmRepository.findById(id).orElseThrow();
+        filmMapper.updateFilmRequestToFilm(request, film);
+
+        film.getActors().clear();
+        request.actors().stream()
+                .map(actorService::findOrCreate)
+                .forEach(film::addActor);
+
+        film.getDirectors().clear();
+        request.directors().stream()
+                .map(directorService::findOrCreate)
+                .forEach(film::addDirector);
+
+        Film saved = filmRepository.save(film);
+
+        return filmMapper.filmToDetailedFilmResponse(saved);
+    }
+
+    @Transactional
     public void deleteById(Long id) {
         filmRepository.deleteById(id);
     }

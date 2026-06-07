@@ -25,6 +25,13 @@ public class FilmController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<DetailedFilmResponse> getFilm(@PathVariable Long id) {
+        DetailedFilmResponse response = filmService.findById(id);
+
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping
     public ResponseEntity<DetailedFilmResponse> createFilm(@RequestBody @Valid FilmRequest request) {
         DetailedFilmResponse response = filmService.createFilm(request);
@@ -32,9 +39,11 @@ public class FilmController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<DetailedFilmResponse> getFilm(@PathVariable Long id) {
-        DetailedFilmResponse response = filmService.findById(id);
+    @PutMapping("/{id}")
+    public ResponseEntity<DetailedFilmResponse> updateFilm(
+            @PathVariable Long id,
+            @RequestBody @Valid FilmRequest request) {
+        DetailedFilmResponse response = filmService.updateFilm(id, request);
 
         return ResponseEntity.ok(response);
     }
