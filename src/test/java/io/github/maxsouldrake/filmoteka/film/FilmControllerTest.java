@@ -112,4 +112,13 @@ class FilmControllerTest {
 
         verify(filmService).updateFilm(eq(FILM_ID), any(FilmRequest.class));
     }
+
+    @Test
+    void shouldDeleteFilm() throws Exception {
+
+        mockMvc.perform(delete("/api/v1/films/{id}", FILM_ID))
+                .andExpect(status().isNoContent());
+
+        verify(filmService).deleteFilm(FILM_ID);
+    }
 }

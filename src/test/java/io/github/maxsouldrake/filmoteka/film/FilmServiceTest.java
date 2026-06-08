@@ -148,6 +148,13 @@ class FilmServiceTest {
         verify(filmMapper).filmToDetailedFilmResponse(any(Film.class));
     }
 
+    @Test
+    void shouldDeleteFilmIfExists() {
+        filmService.deleteFilm(FILM_ID);
+
+        verify(filmRepository).deleteById(FILM_ID);
+    }
+
     private static Answer<Void> updateTitleOnly() {
         return invocation -> {
             FilmRequest request = invocation.getArgument(0);

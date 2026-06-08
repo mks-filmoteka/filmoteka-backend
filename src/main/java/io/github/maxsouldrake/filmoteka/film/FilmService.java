@@ -68,7 +68,7 @@ public class FilmService {
     }
 
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteFilm(Long id) {
         filmRepository.deleteById(id);
     }
 }

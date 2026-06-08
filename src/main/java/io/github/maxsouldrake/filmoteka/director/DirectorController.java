@@ -29,4 +29,10 @@ public class DirectorController {
 
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDirector(@PathVariable Long id) {
+        directorService.deleteDirector(id);
+        return ResponseEntity.noContent().build();
+    }
 }

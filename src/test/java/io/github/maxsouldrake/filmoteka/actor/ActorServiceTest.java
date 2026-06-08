@@ -2,6 +2,7 @@ package io.github.maxsouldrake.filmoteka.actor;
 
 import io.github.maxsouldrake.filmoteka.actor.dto.ActorRequest;
 import io.github.maxsouldrake.filmoteka.actor.dto.DetailedActorResponse;
+import io.github.maxsouldrake.filmoteka.film.Film;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -14,6 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static io.github.maxsouldrake.filmoteka.actor.ActorTestData.*;
+import static io.github.maxsouldrake.filmoteka.film.FilmTestData.loadedFilm;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -97,6 +99,20 @@ class ActorServiceTest {
         assertThat(captor.getValue().getName()).isEqualTo(ACTOR_NAME);
         verify(actorMapper).updateActorRequestToActor(actorRequest(), loadedActor);
         verify(actorMapper).actorToDetailedActorResponse(any(Actor.class));
+    }
+
+    @Test
+    void shouldDeleteActorIfExists() {
+        Film film = loadedFilm();
+        Actor actor = loadedActor();
+        film.addActor(actor);
+        actor.getFilms().add(film);
+
+        when(actorRepository.findById(ACTOR_ID)).thenReturn(Optional.of(actor));
+
+        actorService.deleteActor(ACTOR_ID);
+
+        verify(actorRepository).delete(actor);
     }
 
     private static Answer<Void> updateNameOnly() {

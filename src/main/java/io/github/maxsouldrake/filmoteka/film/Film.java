@@ -61,6 +61,7 @@ public class Film extends BaseEntity {
 
     public void removeActor(Actor actor) {
         actors.remove(actor);
+        actor.getFilms().remove(this);
     }
 
     public void addDirector(Director director) {
@@ -70,5 +71,6 @@ public class Film extends BaseEntity {
 
     public void removeDirector(Director director) {
         directors.remove(director);
+        director.getFilms().remove(this);
     }
 }

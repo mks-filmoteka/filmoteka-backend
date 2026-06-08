@@ -29,4 +29,10 @@ public class ActorController {
 
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteActor(@PathVariable Long id) {
+        actorService.deleteActor(id);
+        return ResponseEntity.noContent().build();
+    }
 }

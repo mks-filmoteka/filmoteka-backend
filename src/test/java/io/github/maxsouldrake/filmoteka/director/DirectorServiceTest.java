@@ -2,6 +2,7 @@ package io.github.maxsouldrake.filmoteka.director;
 
 import io.github.maxsouldrake.filmoteka.director.dto.DetailedDirectorResponse;
 import io.github.maxsouldrake.filmoteka.director.dto.DirectorRequest;
+import io.github.maxsouldrake.filmoteka.film.Film;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -14,6 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static io.github.maxsouldrake.filmoteka.director.DirectorTestData.*;
+import static io.github.maxsouldrake.filmoteka.film.FilmTestData.loadedFilm;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -99,6 +101,20 @@ class DirectorServiceTest {
         assertThat(captor.getValue().getName()).isEqualTo(DIRECTOR_NAME);
         verify(directorMapper).updateDirectorRequestToDirector(directorRequest(), loadedDirector);
         verify(directorMapper).directorToDetailedDirectorResponse(any(Director.class));
+    }
+
+    @Test
+    void shouldDeleteDirectorIfExists() {
+        Film film = loadedFilm();
+        Director director = loadedDirector();
+        film.addDirector(director);
+        director.getFilms().add(film);
+
+        when(directorRepository.findById(DIRECTOR_ID)).thenReturn(Optional.of(director));
+
+        directorService.deleteDirector(DIRECTOR_ID);
+
+        verify(directorRepository).delete(director);
     }
 
     private static Answer<Void> updateNameOnly() {

@@ -16,8 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,5 +62,14 @@ class ActorControllerTest {
                 .andExpect(jsonPath("$.name").value(ACTOR_NAME));
 
         verify(actorService).updateActor(eq(ACTOR_ID), any(ActorRequest.class));
+    }
+
+    @Test
+    void shouldDeleteActor() throws Exception {
+
+        mockMvc.perform(delete("/api/v1/actors/{id}", ACTOR_ID))
+                .andExpect(status().isNoContent());
+
+        verify(actorService).deleteActor(ACTOR_ID);
     }
 }

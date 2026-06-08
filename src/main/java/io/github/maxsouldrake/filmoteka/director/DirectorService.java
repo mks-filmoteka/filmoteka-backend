@@ -35,4 +35,11 @@ public class DirectorService {
 
         return directorMapper.directorToDetailedDirectorResponse(saved);
     }
+
+    @Transactional
+    public void deleteDirector(Long id) {
+        Director director = directorRepository.findById(id).orElseThrow();
+        director.getFilms().forEach(film -> film.removeDirector(director));
+        directorRepository.delete(director);
+    }
 }

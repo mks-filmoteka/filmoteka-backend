@@ -35,4 +35,11 @@ public class ActorService {
 
         return actorMapper.actorToDetailedActorResponse(saved);
     }
+
+    @Transactional
+    public void deleteActor(Long id) {
+        Actor actor = actorRepository.findById(id).orElseThrow();
+        actor.getFilms().forEach(film -> film.removeActor(actor));
+        actorRepository.delete(actor);
+    }
 }
