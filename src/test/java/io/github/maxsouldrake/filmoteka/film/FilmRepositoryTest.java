@@ -5,8 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
-import java.util.List;
 import java.util.Optional;
 
 import static io.github.maxsouldrake.filmoteka.film.FilmTestData.*;
@@ -36,14 +39,36 @@ class FilmRepositoryTest {
     }
 
     @Test
-    void shouldFindFilmsByTitleIgnoringCase() {
+    void shouldFindPagedFilmsByTitle() {
         Film nonComplFilm = film();
         nonComplFilm.setTitle("different title");
         filmRepository.saveAndFlush(nonComplFilm);
         filmRepository.saveAndFlush(film());
 
-        List<Film> loadedFilms = filmRepository.findByTitleContainingIgnoreCase("Film");
+        Pageable pageable = PageRequest.of(0, 100);
+        Page<Film> page = filmRepository.findByTitleContainingIgnoreCase("Film", pageable);
 
-        assertThat(loadedFilms).extracting(Film::getTitle).containsExactlyInAnyOrder("film title");
+        assertThat(page.getContent()).extracting(Film::getTitle).containsExactlyInAnyOrder("film title");
+    }
+
+    @Test
+    void shouldReturnFilmsSortedByTitleAscending() {
+        Film filmA = film();
+        filmA.setTitle("A");
+        Film filmB = film();
+        filmB.setTitle("B");
+        Film filmC = film();
+        filmC.setTitle("C");
+
+        filmRepository.saveAndFlush(filmC);
+        filmRepository.saveAndFlush(filmB);
+        filmRepository.saveAndFlush(filmA);
+
+        Page<Film> result = filmRepository.findAll(
+                PageRequest.of(0, 100, Sort.by("title").ascending()));
+
+        assertThat(result.getContent())
+                .extracting(Film::getTitle)
+                .containsExactly("A", "B", "C");
     }
 }

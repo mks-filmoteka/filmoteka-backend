@@ -1,6 +1,8 @@
 package io.github.maxsouldrake.filmoteka.film;
 
+import io.github.maxsouldrake.filmoteka.common.PageResponse;
 import io.github.maxsouldrake.filmoteka.film.dto.FilmRequest;
+import io.github.maxsouldrake.filmoteka.film.dto.FilmResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -75,38 +77,46 @@ class FilmControllerTest {
     }
 
     @Test
-    void shouldReturnFilms() throws Exception {
-        when(filmService.getFilms(null)).thenReturn(List.of(filmResponse()));
+    void shouldReturnPagedFilms() throws Exception {
+        PageResponse<FilmResponse> response =
+                new PageResponse<>(List.of(filmResponse()), 0, 100, 1, 1);
+        when(filmService.getFilms(eq(null), any())).thenReturn(response);
 
         mockMvc.perform(get("/api/v1/films"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].title").value("film title"));
+                .andExpect(jsonPath("$.size").value(100))
+                .andExpect(jsonPath("$.page").value(0))
+                .andExpect(jsonPath("$.content[0].title").value(FILM_TITLE))
+                .andExpect(jsonPath("$.content[0].id").value(FILM_ID));
 
-        verify(filmService).getFilms(null);
+        verify(filmService).getFilms(eq(null), any());
     }
 
     @Test
-    void shouldReturnEmptyList() throws Exception {
-        when(filmService.getFilms(null)).thenReturn(List.of());
+    void shouldReturnPagedEmptyList() throws Exception {
+        PageResponse<FilmResponse> response =
+                new PageResponse<>(List.of(), 0, 100, 0, 1);
+        when(filmService.getFilms(eq(null), any())).thenReturn(response);
 
         mockMvc.perform(get("/api/v1/films"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$.content").isEmpty())
+                .andExpect(jsonPath("$.totalElements").value(0));
 
-        verify(filmService).getFilms(null);
+        verify(filmService).getFilms(eq(null), any());
     }
 
     @Test
-    void shouldSearchFilmsByTitle() throws Exception {
+    void shouldReturnPagedFilmsByTitle() throws Exception {
+        PageResponse<FilmResponse> response =
+                new PageResponse<>(List.of(filmResponse()), 0, 100, 1, 1);
+        when(filmService.getFilms(eq("film"), any())).thenReturn(response);
 
-        when(filmService.getFilms(FILM_TITLE)).thenReturn(List.of(filmResponse()));
-
-        mockMvc.perform(get("/api/v1/films").param("title", FILM_TITLE))
+        mockMvc.perform(get("/api/v1/films").param("title", "film"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value(FILM_TITLE));
+                .andExpect(jsonPath("$.content[0].title").value(FILM_TITLE));
 
-        verify(filmService).getFilms(FILM_TITLE);
+        verify(filmService).getFilms(eq("film"), any());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package io.github.maxsouldrake.filmoteka.film;
 
 import io.github.maxsouldrake.filmoteka.actor.ActorService;
+import io.github.maxsouldrake.filmoteka.common.PageResponse;
 import io.github.maxsouldrake.filmoteka.director.DirectorService;
 import io.github.maxsouldrake.filmoteka.film.dto.DetailedFilmResponse;
 import io.github.maxsouldrake.filmoteka.film.dto.FilmRequest;
@@ -12,6 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -94,60 +99,74 @@ class FilmServiceTest {
     }
 
     @Test
-    void shouldFindAllFilmsWhenTitleNull() {
+    void shouldReturnPagedFilmsWhenTitleNull() {
         List<Film> films = List.of(loadedFilm());
-        when(filmRepository.findAll()).thenReturn(films);
-        when(filmMapper.filmsToFilmResponses(films)).thenReturn(List.of(filmResponse()));
+        Pageable pageable = PageRequest.of(0, 100);
+        Page<Film> page = new PageImpl<>(films, pageable, films.size());
+        when(filmRepository.findAll(pageable)).thenReturn(page);
+        when(filmMapper.filmsToFilmResponses(page.getContent())).thenReturn(List.of(filmResponse()));
 
-        List<FilmResponse> response = filmService.getFilms(null);
+        PageResponse<FilmResponse> response = filmService.getFilms(null, pageable);
 
-        assertThat(response).containsExactly(filmResponse());
+        assertThat(response.content()).containsExactly(filmResponse());
+        assertThat(response.size()).isEqualTo(100);
+        assertThat(response.totalElements()).isEqualTo(1);
 
-        verify(filmRepository).findAll();
-        verify(filmRepository, never()).findByTitleContainingIgnoreCase(anyString());
+        verify(filmRepository).findAll(pageable);
+        verify(filmRepository, never()).findByTitleContainingIgnoreCase(anyString(), any(Pageable.class));
         verify(filmMapper).filmsToFilmResponses(films);
     }
 
     @Test
-    void shouldReturnAllFilmsWhenTitleBlank() {
+    void shouldReturnPagedFilmsWhenTitleBlank() {
         List<Film> films = List.of(loadedFilm());
-        when(filmRepository.findAll()).thenReturn(films);
-        when(filmMapper.filmsToFilmResponses(films)).thenReturn(List.of(filmResponse()));
+        Pageable pageable = PageRequest.of(0, 100);
+        Page<Film> page = new PageImpl<>(films, pageable, films.size());
+        when(filmRepository.findAll(pageable)).thenReturn(page);
+        when(filmMapper.filmsToFilmResponses(page.getContent())).thenReturn(List.of(filmResponse()));
 
-        List<FilmResponse> response = filmService.getFilms(" ");
+        PageResponse<FilmResponse> response = filmService.getFilms(" ", pageable);
 
-        assertThat(response).containsExactly(filmResponse());
+        assertThat(response.content()).containsExactly(filmResponse());
+        assertThat(response.size()).isEqualTo(100);
+        assertThat(response.totalElements()).isEqualTo(1);
 
-        verify(filmRepository).findAll();
-        verify(filmRepository, never()).findByTitleContainingIgnoreCase(anyString());
+        verify(filmRepository).findAll(pageable);
+        verify(filmRepository, never()).findByTitleContainingIgnoreCase(anyString(), any(Pageable.class));
         verify(filmMapper).filmsToFilmResponses(films);
     }
 
     @Test
     void shouldReturnFilmsByTitle() {
         List<Film> films = List.of(loadedFilm());
-        when(filmRepository.findByTitleContainingIgnoreCase("film")).thenReturn(films);
-        when(filmMapper.filmsToFilmResponses(films)).thenReturn(List.of(filmResponse()));
+        Page<Film> page = new PageImpl<>(films);
+        Pageable pageable = PageRequest.of(0, 100);
+        when(filmRepository.findByTitleContainingIgnoreCase("film", pageable)).thenReturn(page);
+        when(filmMapper.filmsToFilmResponses(page.getContent())).thenReturn(List.of(filmResponse()));
 
-        List<FilmResponse> response = filmService.getFilms("film");
+        PageResponse<FilmResponse> response = filmService.getFilms("film", pageable);
 
-        assertThat(response).containsExactly(filmResponse());
+        assertThat(response.content()).containsExactly(filmResponse());
+        assertThat(response.totalElements()).isEqualTo(1);
 
-        verify(filmRepository).findByTitleContainingIgnoreCase("film");
+        verify(filmRepository).findByTitleContainingIgnoreCase("film", pageable);
         verify(filmRepository, never()).findAll();
         verify(filmMapper).filmsToFilmResponses(films);
     }
 
     @Test
     void shouldReturnEmptyListIfNotExist() {
-        when(filmRepository.findAll()).thenReturn(List.of());
+        List<Film> films = List.of();
+        Page<Film> page = new PageImpl<>(films);
+        Pageable pageable = PageRequest.of(0, 100);
+        when(filmRepository.findAll(pageable)).thenReturn(page);
         when(filmMapper.filmsToFilmResponses(List.of())).thenReturn(List.of());
 
-        List<FilmResponse> response = filmService.getFilms(null);
+        PageResponse<FilmResponse> response = filmService.getFilms(null, pageable);
 
-        assertThat(response).isEmpty();
+        assertThat(response.content()).isEmpty();
 
-        verify(filmRepository).findAll();
+        verify(filmRepository).findAll(pageable);
         verify(filmMapper).filmsToFilmResponses(List.of());
     }
 
