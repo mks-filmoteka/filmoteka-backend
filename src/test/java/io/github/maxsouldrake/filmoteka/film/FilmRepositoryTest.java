@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import java.util.List;
 import java.util.Optional;
 
 import static io.github.maxsouldrake.filmoteka.film.FilmTestData.*;
@@ -32,5 +33,17 @@ class FilmRepositoryTest {
         assertEquals(FILM_DESCRIPTION, loadedFilm.get().getDescription());
         assertEquals(FILM_POSTER_URL, loadedFilm.get().getPosterUrl());
         assertThat(loadedFilm.get().getGenres()).containsExactlyInAnyOrder(Genre.ADVENTURE, Genre.ACTION);
+    }
+
+    @Test
+    void shouldFindFilmsByTitleIgnoringCase() {
+        Film nonComplFilm = film();
+        nonComplFilm.setTitle("different title");
+        filmRepository.saveAndFlush(nonComplFilm);
+        filmRepository.saveAndFlush(film());
+
+        List<Film> loadedFilms = filmRepository.findByTitleContainingIgnoreCase("Film");
+
+        assertThat(loadedFilms).extracting(Film::getTitle).containsExactlyInAnyOrder("film title");
     }
 }

@@ -94,16 +94,47 @@ class FilmServiceTest {
     }
 
     @Test
-    void shouldFindFilmsIfExist() {
+    void shouldFindAllFilmsWhenTitleNull() {
         List<Film> films = List.of(loadedFilm());
         when(filmRepository.findAll()).thenReturn(films);
         when(filmMapper.filmsToFilmResponses(films)).thenReturn(List.of(filmResponse()));
 
-        List<FilmResponse> response = filmService.findAll();
+        List<FilmResponse> response = filmService.getFilms(null);
 
         assertThat(response).containsExactly(filmResponse());
 
         verify(filmRepository).findAll();
+        verify(filmRepository, never()).findByTitleContainingIgnoreCase(anyString());
+        verify(filmMapper).filmsToFilmResponses(films);
+    }
+
+    @Test
+    void shouldReturnAllFilmsWhenTitleBlank() {
+        List<Film> films = List.of(loadedFilm());
+        when(filmRepository.findAll()).thenReturn(films);
+        when(filmMapper.filmsToFilmResponses(films)).thenReturn(List.of(filmResponse()));
+
+        List<FilmResponse> response = filmService.getFilms(" ");
+
+        assertThat(response).containsExactly(filmResponse());
+
+        verify(filmRepository).findAll();
+        verify(filmRepository, never()).findByTitleContainingIgnoreCase(anyString());
+        verify(filmMapper).filmsToFilmResponses(films);
+    }
+
+    @Test
+    void shouldReturnFilmsByTitle() {
+        List<Film> films = List.of(loadedFilm());
+        when(filmRepository.findByTitleContainingIgnoreCase("film")).thenReturn(films);
+        when(filmMapper.filmsToFilmResponses(films)).thenReturn(List.of(filmResponse()));
+
+        List<FilmResponse> response = filmService.getFilms("film");
+
+        assertThat(response).containsExactly(filmResponse());
+
+        verify(filmRepository).findByTitleContainingIgnoreCase("film");
+        verify(filmRepository, never()).findAll();
         verify(filmMapper).filmsToFilmResponses(films);
     }
 
@@ -112,7 +143,7 @@ class FilmServiceTest {
         when(filmRepository.findAll()).thenReturn(List.of());
         when(filmMapper.filmsToFilmResponses(List.of())).thenReturn(List.of());
 
-        List<FilmResponse> response = filmService.findAll();
+        List<FilmResponse> response = filmService.getFilms(null);
 
         assertThat(response).isEmpty();
 

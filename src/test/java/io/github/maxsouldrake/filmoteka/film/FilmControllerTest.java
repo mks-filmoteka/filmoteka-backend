@@ -76,25 +76,37 @@ class FilmControllerTest {
 
     @Test
     void shouldReturnFilms() throws Exception {
-        when(filmService.findAll()).thenReturn(List.of(filmResponse()));
+        when(filmService.getFilms(null)).thenReturn(List.of(filmResponse()));
 
         mockMvc.perform(get("/api/v1/films"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].title").value("film title"));
 
-        verify(filmService).findAll();
+        verify(filmService).getFilms(null);
     }
 
     @Test
     void shouldReturnEmptyList() throws Exception {
-        when(filmService.findAll()).thenReturn(List.of());
+        when(filmService.getFilms(null)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/v1/films"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
 
-        verify(filmService).findAll();
+        verify(filmService).getFilms(null);
+    }
+
+    @Test
+    void shouldSearchFilmsByTitle() throws Exception {
+
+        when(filmService.getFilms(FILM_TITLE)).thenReturn(List.of(filmResponse()));
+
+        mockMvc.perform(get("/api/v1/films").param("title", FILM_TITLE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value(FILM_TITLE));
+
+        verify(filmService).getFilms(FILM_TITLE);
     }
 
     @Test

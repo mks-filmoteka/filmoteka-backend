@@ -19,8 +19,8 @@ public class FilmController {
     private final FilmService filmService;
 
     @GetMapping
-    public ResponseEntity<List<FilmResponse>> getFilms() {
-        List<FilmResponse> response = filmService.findAll();
+    public ResponseEntity<List<FilmResponse>> getFilms(@RequestParam(required = false) String title) {
+        List<FilmResponse> response = filmService.getFilms(title);
 
         return ResponseEntity.ok(response);
     }

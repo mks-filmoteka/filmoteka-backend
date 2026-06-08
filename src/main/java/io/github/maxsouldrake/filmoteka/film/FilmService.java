@@ -21,8 +21,9 @@ public class FilmService {
     private final DirectorService directorService;
     private final FilmMapper filmMapper;
 
-    public List<FilmResponse> findAll() {
-        return filmMapper.filmsToFilmResponses(filmRepository.findAll());
+    public List<FilmResponse> getFilms(String title) {
+        List<Film> films = title == null || title.isBlank() ? filmRepository.findAll() : filmRepository.findByTitleContainingIgnoreCase(title);
+        return filmMapper.filmsToFilmResponses(films);
     }
 
     public DetailedFilmResponse findById(Long id) {
