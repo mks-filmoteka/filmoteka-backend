@@ -10,6 +10,7 @@ import io.github.maxsouldrake.filmoteka.film.dto.FilmFilter;
 import io.github.maxsouldrake.filmoteka.film.dto.FilmRequest;
 import io.github.maxsouldrake.filmoteka.film.dto.FilmResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -29,6 +31,8 @@ public class FilmService {
     private final FilmMapper filmMapper;
 
     public PageResponse<FilmResponse> getFilms(FilmFilter filter, Pageable pageable) {
+        log.debug("Searching films. filter={}, pageable={}", filter, pageable);
+        
         Specification<Film> specification = FilmSpecification.withFilters(filter);
         Page<Film> page = filmRepository.findAll(specification, pageable);
         List<FilmResponse> content = filmMapper.filmsToFilmResponses(page.getContent());
@@ -60,6 +64,7 @@ public class FilmService {
                 .forEach(film::addDirector);
 
         Film saved = filmRepository.save(film);
+        log.info("Created film id={}, title={}", saved.getId(), saved.getTitle());
 
         return filmMapper.filmToDetailedFilmResponse(saved);
     }
@@ -80,6 +85,7 @@ public class FilmService {
                 .forEach(film::addDirector);
 
         Film saved = filmRepository.save(film);
+        log.info("Updated film id={} with title={}", saved.getId(), saved.getTitle());
 
         return filmMapper.filmToDetailedFilmResponse(saved);
     }
@@ -87,6 +93,7 @@ public class FilmService {
     @Transactional
     public void deleteFilm(Long id) {
         filmRepository.deleteById(id);
+        log.info("Deleted film id={}", id);
     }
 
     private Film getFilmOrThrow(Long id) {

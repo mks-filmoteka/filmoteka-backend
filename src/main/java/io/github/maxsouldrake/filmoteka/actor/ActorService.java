@@ -4,9 +4,13 @@ import io.github.maxsouldrake.filmoteka.actor.dto.ActorRequest;
 import io.github.maxsouldrake.filmoteka.actor.dto.DetailedActorResponse;
 import io.github.maxsouldrake.filmoteka.common.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -22,9 +26,14 @@ public class ActorService {
 
     @Transactional
     public Actor findOrCreate(ActorRequest request) {
-        return actorRepository.findByName(request.name()).orElseGet(
-                () -> actorRepository.save(actorMapper.actorRequestToActor(request))
-        );
+        Optional<Actor> actor = actorRepository.findByName(request.name());
+        if (actor.isPresent()) {
+            return actor.get();
+        }
+        Actor saved = actorRepository.save(actorMapper.actorRequestToActor(request));
+        log.info("Created actor id={}, name={}", saved.getId(), saved.getName());
+
+        return saved;
     }
 
     @Transactional
@@ -33,6 +42,7 @@ public class ActorService {
         actorMapper.updateActorRequestToActor(request, actor);
 
         Actor saved = actorRepository.save(actor);
+        log.info("Updated actor id={} with name={}", saved.getId(), saved.getName());
 
         return actorMapper.actorToDetailedActorResponse(saved);
     }
@@ -42,6 +52,7 @@ public class ActorService {
         Actor actor = getActorOrThrow(id);
         actor.getFilms().forEach(film -> film.removeActor(actor));
         actorRepository.delete(actor);
+        log.info("Deleted actor id={}", id);
     }
 
     private Actor getActorOrThrow(Long id) {

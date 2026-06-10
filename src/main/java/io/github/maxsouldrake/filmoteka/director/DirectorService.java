@@ -4,9 +4,13 @@ import io.github.maxsouldrake.filmoteka.common.exception.ResourceNotFoundExcepti
 import io.github.maxsouldrake.filmoteka.director.dto.DetailedDirectorResponse;
 import io.github.maxsouldrake.filmoteka.director.dto.DirectorRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -22,9 +26,14 @@ public class DirectorService {
 
     @Transactional
     public Director findOrCreate(DirectorRequest request) {
-        return directorRepository.findByName(request.name()).orElseGet(
-                () -> directorRepository.save(directorMapper.directorRequestToDirector(request))
-        );
+        Optional<Director> director = directorRepository.findByName(request.name());
+        if (director.isPresent()) {
+            return director.get();
+        }
+        Director saved = directorRepository.save(directorMapper.directorRequestToDirector(request));
+        log.info("Created director id={}, name={}", saved.getId(), saved.getName());
+
+        return saved;
     }
 
     @Transactional
@@ -33,6 +42,7 @@ public class DirectorService {
         directorMapper.updateDirectorRequestToDirector(request, director);
 
         Director saved = directorRepository.save(director);
+        log.info("Updated director id={} with name={}", saved.getId(), saved.getName());
 
         return directorMapper.directorToDetailedDirectorResponse(saved);
     }
@@ -42,6 +52,7 @@ public class DirectorService {
         Director director = getDirectorOrThrow(id);
         director.getFilms().forEach(film -> film.removeDirector(director));
         directorRepository.delete(director);
+        log.info("Deleted director id={}", id);
     }
 
     private Director getDirectorOrThrow(Long id) {
