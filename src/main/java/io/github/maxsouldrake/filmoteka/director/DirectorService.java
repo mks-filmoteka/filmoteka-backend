@@ -1,5 +1,6 @@
 package io.github.maxsouldrake.filmoteka.director;
 
+import io.github.maxsouldrake.filmoteka.common.exception.ConflictException;
 import io.github.maxsouldrake.filmoteka.common.exception.ResourceNotFoundException;
 import io.github.maxsouldrake.filmoteka.director.dto.DetailedDirectorResponse;
 import io.github.maxsouldrake.filmoteka.director.dto.DirectorRequest;
@@ -39,6 +40,9 @@ public class DirectorService {
     @Transactional
     public DetailedDirectorResponse updateDirector(Long id, DirectorRequest request) {
         Director director = getDirectorOrThrow(id);
+        if (!director.getName().equals(request.name()) && directorRepository.existsByName(request.name())) {
+            throw new ConflictException("Director with name " + request.name() + " already exists");
+        }
         directorMapper.updateDirectorRequestToDirector(request, director);
 
         Director saved = directorRepository.save(director);

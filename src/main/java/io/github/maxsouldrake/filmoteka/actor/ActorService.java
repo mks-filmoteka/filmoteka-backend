@@ -2,6 +2,7 @@ package io.github.maxsouldrake.filmoteka.actor;
 
 import io.github.maxsouldrake.filmoteka.actor.dto.ActorRequest;
 import io.github.maxsouldrake.filmoteka.actor.dto.DetailedActorResponse;
+import io.github.maxsouldrake.filmoteka.common.exception.ConflictException;
 import io.github.maxsouldrake.filmoteka.common.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,9 @@ public class ActorService {
     @Transactional
     public DetailedActorResponse updateActor(Long id, ActorRequest request) {
         Actor actor = getActorOrThrow(id);
+        if (!actor.getName().equals(request.name()) && actorRepository.existsByName(request.name())) {
+            throw new ConflictException("Actor with name " + request.name() + " already exists");
+        }
         actorMapper.updateActorRequestToActor(request, actor);
 
         Actor saved = actorRepository.save(actor);

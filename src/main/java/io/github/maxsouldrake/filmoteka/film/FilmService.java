@@ -72,6 +72,11 @@ public class FilmService {
     @Transactional
     public DetailedFilmResponse updateFilm(Long id, FilmRequest request) {
         Film film = getFilmOrThrow(id);
+        if ((!film.getTitle().equals(request.title()) || !film.getReleaseYear().equals(request.releaseYear()))
+                && filmRepository.existsByTitleAndReleaseYear(request.title(), request.releaseYear())) {
+            throw new ConflictException(String.format("Film with title '%s' and release year '%s' already exists",
+                    request.title(), request.releaseYear()));
+        }
         filmMapper.updateFilmRequestToFilm(request, film);
 
         film.getActors().clear();
