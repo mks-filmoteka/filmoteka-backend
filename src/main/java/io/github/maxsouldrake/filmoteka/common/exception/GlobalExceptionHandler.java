@@ -13,7 +13,10 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import tools.jackson.databind.exc.InvalidFormatException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -73,14 +76,21 @@ public class GlobalExceptionHandler {
 
         String message = ex.getMessage();
         Throwable cause = ex.getMostSpecificCause();
+        List<ErrorDetail> errorDetails = new ArrayList<>();
 
         if (cause instanceof InvalidFormatException invalidFormatException) {
-            message = String.format("Invalid value '%s'", invalidFormatException.getValue());
+            message = "Invalid value '%s'".formatted(invalidFormatException.getValue());
+            if (invalidFormatException.getTargetType().isEnum()) {
+                String allowedValues = Arrays.stream(invalidFormatException.getTargetType().getEnumConstants())
+                        .map(Object::toString)
+                        .collect(Collectors.joining(", "));
+                errorDetails.add(new ErrorDetail("genres", "Allowed values are: " + allowedValues));
+            }
         }
 
         log.warn("Invalid value. path={}", request.getRequestURI());
         return ResponseEntity.badRequest()
-                .body(buildResponse(HttpStatus.BAD_REQUEST, message, request, ErrorCode.BAD_REQUEST));
+                .body(buildResponse(HttpStatus.BAD_REQUEST, message, request, ErrorCode.BAD_REQUEST, errorDetails));
     }
 
     @ExceptionHandler(Exception.class)
