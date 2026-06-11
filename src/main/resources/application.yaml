@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: filmoteka
+    name: filmoteka-backend
 
   datasource:
     url: jdbc:postgresql://localhost:5432/filmoteka

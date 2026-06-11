@@ -11,9 +11,9 @@
     </parent>
 
     <groupId>io.github.maxsouldrake</groupId>
-    <artifactId>filmoteka</artifactId>
+    <artifactId>filmoteka-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>filmoteka</name>
+    <name>filmoteka-backend</name>
     <description>filmoteka</description>
 
     <properties>
