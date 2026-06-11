@@ -13,8 +13,8 @@ public final class FilmSpecification {
     public static Specification<Film> withFilters(FilmFilter filter) {
         return Specification.where(hasTitle(filter.title()))
                 .and(hasCountry(filter.country()))
-                .and(hasReleaseYearFrom(filter.releaseYearFrom()))
-                .and(hasReleaseYearTo(filter.releaseYearTo()))
+                .and(hasReleaseYearFrom(filter.yearFrom()))
+                .and(hasReleaseYearTo(filter.yearTo()))
                 .and(hasGenres(filter.genres()));
     }
 

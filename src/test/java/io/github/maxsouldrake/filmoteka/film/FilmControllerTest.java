@@ -161,7 +161,7 @@ class FilmControllerTest {
                         .param("yearFrom", "2000")
                         .param("yearTo", "2010")
                         .param("country", "film country")
-                        .param("genre", "ACTION", "ADVENTURE"))
+                        .param("genres", "ACTION", "ADVENTURE"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].title").value(FILM_TITLE));
 
