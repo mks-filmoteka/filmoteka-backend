@@ -1,8 +1,10 @@
 package io.github.maxsouldrake.filmoteka.common.exception;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Schema(description = "Standard error response")
 public record ErrorResponse(
@@ -19,6 +21,9 @@ public record ErrorResponse(
         String path,
 
         @Schema(description = "error code", example = "FILM_NOT_FOUND")
-        ErrorCode code
+        ErrorCode code,
+
+        @ArraySchema(schema = @Schema(implementation = ErrorDetail.class))
+        List<ErrorDetail> errorDetails
 ) {
 }

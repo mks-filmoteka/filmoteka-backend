@@ -83,8 +83,8 @@ class FilmControllerTest {
                                 .content(OBJECT_MAPPER.writeValueAsString(invalidFilmRequest()))
                 )
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error.code").value(ErrorCode.VALIDATION_FAILED.name()))
-                .andExpect(jsonPath("$.validationErrors[*].field",
+                .andExpect(jsonPath("$.code").value(ErrorCode.VALIDATION_FAILED.name()))
+                .andExpect(jsonPath("$.errorDetails[*].field",
                         containsInAnyOrder(
                                 "title",
                                 "releaseYear",

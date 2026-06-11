@@ -38,23 +38,22 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponse> handleValidation(
+    public ResponseEntity<ErrorResponse> handleValidation(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
 
-        ErrorResponse errorResponse = buildResponse(
-                HttpStatus.BAD_REQUEST, "Validation failed", request, ErrorCode.VALIDATION_FAILED);
-
-        List<ValidationError> validationErrors = ex.getBindingResult()
+        List<ErrorDetail> details = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(e -> new ValidationError(
+                .map(e -> new ErrorDetail(
                         e.getField(),
                         e.getDefaultMessage()))
                 .toList();
 
+        ErrorResponse errorResponse = buildResponse(
+                HttpStatus.BAD_REQUEST, "Validation failed", request, ErrorCode.VALIDATION_FAILED, details);
+
         log.warn("Validation failed. path={}", request.getRequestURI());
-        return ResponseEntity.badRequest()
-                .body(new ValidationErrorResponse(errorResponse, validationErrors));
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -97,7 +96,26 @@ public class GlobalExceptionHandler {
                         ErrorCode.INTERNAL_ERROR));
     }
 
-    private ErrorResponse buildResponse(HttpStatus status, String message, HttpServletRequest request, ErrorCode code) {
-        return new ErrorResponse(LocalDateTime.now(), status.value(), message, request.getRequestURI(), code);
+    private ErrorResponse buildResponse(
+            HttpStatus status,
+            String message,
+            HttpServletRequest request,
+            ErrorCode code,
+            List<ErrorDetail> errorDetails) {
+
+        return new ErrorResponse(
+                LocalDateTime.now(),
+                status.value(),
+                message,
+                request.getRequestURI(),
+                code,
+                errorDetails);
+    }
+
+    private ErrorResponse buildResponse(
+            HttpStatus status, String message, HttpServletRequest request, ErrorCode code) {
+
+        return new ErrorResponse(
+                LocalDateTime.now(), status.value(), message, request.getRequestURI(), code, List.of());
     }
 }
