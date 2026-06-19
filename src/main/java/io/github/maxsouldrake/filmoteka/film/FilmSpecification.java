@@ -26,12 +26,15 @@ public final class FilmSpecification {
                         : cb.like(cb.lower(root.get("title")), "%" + title.toLowerCase() + "%");
     }
 
-    public static Specification<Film> hasCountry(String country) {
+    public static Specification<Film> hasCountry(Set<String> country) {
 
-        return (root, query, cb) ->
-                country == null || country.isBlank()
-                        ? cb.conjunction()
-                        : cb.like(cb.lower(root.get("country")), country.toLowerCase());
+        return (root, query, cb) -> {
+            query.distinct(true);
+            return country == null || country.isEmpty()
+                    ? cb.conjunction()
+                    : root.get("country").in(country);
+        };
+
     }
 
     public static Specification<Film> hasReleaseYearFrom(Integer releaseYearFrom) {
@@ -56,7 +59,7 @@ public final class FilmSpecification {
             query.distinct(true);
             return genres == null || genres.isEmpty()
                     ? cb.conjunction()
-                    :  root.join("genres").in(genres);
+                    : root.join("genres").in(genres);
         };
     }
 }

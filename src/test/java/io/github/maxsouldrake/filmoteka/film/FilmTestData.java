@@ -132,7 +132,7 @@ public class FilmTestData {
                 RELEASE_YEAR,
                 RELEASE_YEAR + 10,
                 testSetOf(Genre.ADVENTURE, Genre.ACTION),
-                FILM_COUNTRY);
+                testSetOf(FILM_COUNTRY));
     }
 
     public static FilmFilter emptyFilmFilter() {

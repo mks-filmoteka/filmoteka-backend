@@ -27,8 +27,8 @@ public record FilmFilter(
         @Schema(description = "Genres filter", example = "[\"ACTION\"]")
         Set<Genre> genres,
 
-        @Schema(description = "Country filter", example = "USA")
+        @Schema(description = "Country filter", example = "[\"USA\"]")
         @Size(max = 100)
-        String country
+        Set<String> country
 ) {
 }
