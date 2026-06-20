@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +39,8 @@ public class FilmController {
         Pageable fixedPageable = PageRequest.of(
                 Math.max(pageable.getPageNumber(), 0),
                 100,
-                pageable.getSort());
+                pageable.getSort().isSorted() ? pageable.getSort() : Sort.by("id").ascending()
+        );
 
         PageResponse<FilmResponse> response = filmService.getFilms(filter, fixedPageable);
 
