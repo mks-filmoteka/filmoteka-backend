@@ -36,11 +36,13 @@ public class FilmController {
     public ResponseEntity<PageResponse<FilmResponse>> getFilms(
             @ParameterObject @Valid FilmFilter filter,
             @ParameterObject Pageable pageable) {
-        Pageable fixedPageable = PageRequest.of(
-                Math.max(pageable.getPageNumber(), 0),
-                100,
-                pageable.getSort().isSorted() ? pageable.getSort() : Sort.by("id").ascending()
-        );
+        int pageNumber = Math.max(pageable.getPageNumber(), 0);
+        int pageSize = 100;
+        Sort sort = pageable.getSort().isSorted()
+                ? pageable.getSort().and(Sort.by("id").ascending())
+                : Sort.by("id").ascending();
+
+        Pageable fixedPageable = PageRequest.of(pageNumber, pageSize, sort);
 
         PageResponse<FilmResponse> response = filmService.getFilms(filter, fixedPageable);
 
