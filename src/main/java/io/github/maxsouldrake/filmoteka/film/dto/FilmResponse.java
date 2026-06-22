@@ -1,6 +1,9 @@
 package io.github.maxsouldrake.filmoteka.film.dto;
 
+import io.github.maxsouldrake.filmoteka.film.Genre;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.util.Set;
 
 @Schema(description = "Simple film response")
 public record FilmResponse(
@@ -10,10 +13,16 @@ public record FilmResponse(
         @Schema(description = "Film title", example = "The Matrix")
         String title,
 
+        @Schema(description = "Film country of production", example = "USA")
+        String country,
+
         @Schema(description = "Film release year", example = "1999")
         Integer releaseYear,
 
         @Schema(description = "Url of film poster", example = "https://film_poster")
-        String posterUrl
+        String posterUrl,
+
+        @Schema(description = "Film genres", example = "[\"ACTION\", \"ADVENTURE\"]")
+        Set<Genre> genres
 ) {
 }

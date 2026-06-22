@@ -121,8 +121,10 @@ public class FilmTestData {
         return new FilmResponse(
                 FILM_ID,
                 FILM_TITLE,
+                FILM_COUNTRY,
                 RELEASE_YEAR,
-                FILM_POSTER_URL
+                FILM_POSTER_URL,
+                testSetOf(Genre.ADVENTURE, Genre.ACTION)
         );
     }
 
