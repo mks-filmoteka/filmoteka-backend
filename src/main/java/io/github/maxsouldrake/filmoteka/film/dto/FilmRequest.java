@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.URL;
 
-import java.util.Set;
+import java.util.List;
 
 @Schema(description = "Request for creating or updating a film")
 public record FilmRequest(
@@ -41,17 +41,17 @@ public record FilmRequest(
         @Schema(description = "Film genres", example = "[\"ACTION\", \"ADVENTURE\"]")
         @NotEmpty
         @Size(max = 5)
-        Set<@NotNull Genre> genres,
+        List<@NotNull Genre> genres,
 
         @ArraySchema(schema = @Schema(implementation = ActorRequest.class))
         @NotEmpty
         @Size(max = 20)
-        Set<@NotNull ActorRequest> actors,
+        List<@NotNull ActorRequest> actors,
 
         @ArraySchema(schema = @Schema(implementation = DirectorRequest.class))
         @NotEmpty
         @Size(max = 5)
-        Set<@NotNull DirectorRequest> directors
+        List<@NotNull DirectorRequest> directors
 ) {
 
 }

@@ -13,7 +13,7 @@ import org.springframework.data.domain.Sort;
 import java.util.Optional;
 
 import static io.github.maxsouldrake.filmoteka.film.FilmTestData.*;
-import static io.github.maxsouldrake.filmoteka.util.TestUtil.testSetOf;
+import static io.github.maxsouldrake.filmoteka.util.TestUtil.testListOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,7 +45,7 @@ class FilmRepositoryTest {
         nonComplFilm.setTitle("different title");
         nonComplFilm.setReleaseYear(1999);
         nonComplFilm.setCountry("different country");
-        nonComplFilm.setGenres(testSetOf(Genre.CRIME));
+        nonComplFilm.setGenres(testListOf(Genre.CRIME));
         filmRepository.saveAndFlush(nonComplFilm);
         filmRepository.saveAndFlush(film());
 
@@ -55,7 +55,7 @@ class FilmRepositoryTest {
         assertThat(page.getContent()).extracting(Film::getTitle).containsExactlyInAnyOrder(FILM_TITLE);
         assertThat(page.getContent()).extracting(Film::getReleaseYear).containsExactlyInAnyOrder(RELEASE_YEAR);
         assertThat(page.getContent()).extracting(Film::getCountry).containsExactlyInAnyOrder(FILM_COUNTRY);
-        assertThat(page.getContent()).extracting(Film::getGenres).containsExactlyInAnyOrder(testSetOf(Genre.ADVENTURE, Genre.ACTION));
+        assertThat(page.getContent().getFirst().getGenres()).containsExactlyInAnyOrder(Genre.ADVENTURE, Genre.ACTION);
     }
 
     @Test

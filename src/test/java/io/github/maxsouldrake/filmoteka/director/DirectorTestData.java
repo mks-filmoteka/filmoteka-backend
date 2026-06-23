@@ -40,7 +40,7 @@ public class DirectorTestData {
         return new DetailedDirectorResponse(
                 DIRECTOR_ID,
                 DIRECTOR_NAME,
-                TestUtil.testSetOf(filmResponse())
+                TestUtil.testListOf(filmResponse())
         );
     }
 }

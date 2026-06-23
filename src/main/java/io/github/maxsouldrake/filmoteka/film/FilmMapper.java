@@ -3,6 +3,7 @@ package io.github.maxsouldrake.filmoteka.film;
 import io.github.maxsouldrake.filmoteka.film.dto.DetailedFilmResponse;
 import io.github.maxsouldrake.filmoteka.film.dto.FilmRequest;
 import io.github.maxsouldrake.filmoteka.film.dto.FilmResponse;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -23,4 +24,11 @@ public interface FilmMapper {
     FilmResponse filmToFilmResponse(Film film);
     DetailedFilmResponse filmToDetailedFilmResponse(Film film);
     List<FilmResponse> filmsToFilmResponses(List<Film> films);
+
+    @AfterMapping
+    default void normalizeGenres(FilmRequest request, @MappingTarget Film film) {
+        if (request.genres() != null) {
+            film.setGenres(request.genres().stream().distinct().toList());
+        }
+    }
 }

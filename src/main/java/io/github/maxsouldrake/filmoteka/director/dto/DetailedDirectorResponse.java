@@ -4,7 +4,7 @@ import io.github.maxsouldrake.filmoteka.film.dto.FilmResponse;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.util.Set;
+import java.util.List;
 
 @Schema(description = "Director response with list of films")
 public record DetailedDirectorResponse(
@@ -15,6 +15,6 @@ public record DetailedDirectorResponse(
         String name,
 
         @ArraySchema(schema = @Schema(implementation = FilmResponse.class))
-        Set<FilmResponse> films
+        List<FilmResponse> films
 ) {
 }

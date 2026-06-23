@@ -8,8 +8,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,5 +22,5 @@ public class Actor extends BaseEntity {
     private String name;
 
     @ManyToMany(mappedBy = "actors")
-    private Set<Film> films = new HashSet<>();
+    private List<Film> films = new ArrayList<>();
 }

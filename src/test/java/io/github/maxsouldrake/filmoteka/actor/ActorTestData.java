@@ -40,7 +40,7 @@ public class ActorTestData {
         return new DetailedActorResponse(
                 ACTOR_ID,
                 ACTOR_NAME,
-                TestUtil.testSetOf(filmResponse())
+                TestUtil.testListOf(filmResponse())
         );
     }
 }

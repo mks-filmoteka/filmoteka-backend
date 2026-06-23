@@ -6,8 +6,8 @@ import io.github.maxsouldrake.filmoteka.director.Director;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -35,7 +35,7 @@ public class Film extends BaseEntity {
             joinColumns = @JoinColumn(name = "film_id")
     )
     @Column(name = "genre")
-    private Set<Genre> genres = new HashSet<>();
+    private List<Genre> genres = new ArrayList<>();
 
     @Column(columnDefinition = "text")
     private String description;
@@ -49,7 +49,7 @@ public class Film extends BaseEntity {
             joinColumns = @JoinColumn(name = "film_id"),
             inverseJoinColumns = @JoinColumn(name = "actor_id")
     )
-    private Set<Actor> actors = new HashSet<>();
+    private List<Actor> actors = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -57,7 +57,7 @@ public class Film extends BaseEntity {
             joinColumns = @JoinColumn(name = "film_id"),
             inverseJoinColumns = @JoinColumn(name = "director_id")
     )
-    private Set<Director> directors = new HashSet<>();
+    private List<Director> directors = new ArrayList<>();
 
     public void addActor(Actor actor) {
         actors.add(actor);

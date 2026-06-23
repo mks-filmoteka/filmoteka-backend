@@ -3,7 +3,7 @@ package io.github.maxsouldrake.filmoteka.film.dto;
 import io.github.maxsouldrake.filmoteka.film.Genre;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.util.Set;
+import java.util.List;
 
 @Schema(description = "Simple film response")
 public record FilmResponse(
@@ -23,6 +23,6 @@ public record FilmResponse(
         String posterUrl,
 
         @Schema(description = "Film genres", example = "[\"ACTION\", \"ADVENTURE\"]")
-        Set<Genre> genres
+        List<Genre> genres
 ) {
 }

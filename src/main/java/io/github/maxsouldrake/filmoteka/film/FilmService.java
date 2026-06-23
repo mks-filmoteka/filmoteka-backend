@@ -57,9 +57,11 @@ public class FilmService {
         Film film = filmMapper.filmRequestToFilm(request);
 
         request.actors().stream()
+                .distinct()
                 .map(actorService::findOrCreate)
                 .forEach(film::addActor);
         request.directors().stream()
+                .distinct()
                 .map(directorService::findOrCreate)
                 .forEach(film::addDirector);
 
@@ -81,11 +83,13 @@ public class FilmService {
 
         film.getActors().clear();
         request.actors().stream()
+                .distinct()
                 .map(actorService::findOrCreate)
                 .forEach(film::addActor);
 
         film.getDirectors().clear();
         request.directors().stream()
+                .distinct()
                 .map(directorService::findOrCreate)
                 .forEach(film::addDirector);
 

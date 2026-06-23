@@ -9,6 +9,7 @@ import static io.github.maxsouldrake.filmoteka.actor.ActorTestData.actorRequest;
 import static io.github.maxsouldrake.filmoteka.actor.ActorTestData.actorResponse;
 import static io.github.maxsouldrake.filmoteka.director.DirectorTestData.directorRequest;
 import static io.github.maxsouldrake.filmoteka.director.DirectorTestData.directorResponse;
+import static io.github.maxsouldrake.filmoteka.util.TestUtil.testListOf;
 import static io.github.maxsouldrake.filmoteka.util.TestUtil.testSetOf;
 
 public class FilmTestData {
@@ -27,7 +28,7 @@ public class FilmTestData {
         film.setCountry(FILM_COUNTRY);
         film.setDescription(FILM_DESCRIPTION);
         film.setPosterUrl(FILM_POSTER_URL);
-        film.setGenres(testSetOf(Genre.ADVENTURE, Genre.ACTION));
+        film.setGenres(testListOf(Genre.ADVENTURE, Genre.ACTION));
         return film;
     }
 
@@ -44,7 +45,7 @@ public class FilmTestData {
                 FILM_COUNTRY,
                 FILM_DESCRIPTION,
                 FILM_POSTER_URL,
-                testSetOf(Genre.ADVENTURE, Genre.ACTION),
+                testListOf(Genre.ADVENTURE, Genre.ACTION),
                 null,
                 null
         );
@@ -57,9 +58,9 @@ public class FilmTestData {
                 "",
                 "",
                 "url",
-                testSetOf(),
-                testSetOf(),
-                testSetOf()
+                testListOf(),
+                testListOf(),
+                testListOf()
         );
     }
 
@@ -70,9 +71,9 @@ public class FilmTestData {
                 FILM_COUNTRY,
                 FILM_DESCRIPTION,
                 FILM_POSTER_URL,
-                testSetOf(Genre.ADVENTURE, Genre.ACTION),
-                testSetOf(actorRequest()),
-                testSetOf(directorRequest())
+                testListOf(Genre.ADVENTURE, Genre.ACTION),
+                testListOf(actorRequest()),
+                testListOf(directorRequest())
         );
     }
 
@@ -83,7 +84,7 @@ public class FilmTestData {
                 "updated country",
                 FILM_DESCRIPTION,
                 FILM_POSTER_URL,
-                testSetOf(Genre.COMEDY),
+                testListOf(Genre.COMEDY),
                 null,
                 null
         );
@@ -97,9 +98,9 @@ public class FilmTestData {
                 FILM_COUNTRY,
                 FILM_DESCRIPTION,
                 FILM_POSTER_URL,
-                testSetOf(Genre.ADVENTURE, Genre.ACTION),
-                testSetOf(),
-                testSetOf()
+                testListOf(Genre.ADVENTURE, Genre.ACTION),
+                testListOf(),
+                testListOf()
         );
     }
 
@@ -111,9 +112,9 @@ public class FilmTestData {
                 FILM_COUNTRY,
                 FILM_DESCRIPTION,
                 FILM_POSTER_URL,
-                testSetOf(Genre.ADVENTURE, Genre.ACTION),
-                testSetOf(actorResponse()),
-                testSetOf(directorResponse())
+                testListOf(Genre.ADVENTURE, Genre.ACTION),
+                testListOf(actorResponse()),
+                testListOf(directorResponse())
         );
     }
 
@@ -124,7 +125,7 @@ public class FilmTestData {
                 FILM_COUNTRY,
                 RELEASE_YEAR,
                 FILM_POSTER_URL,
-                testSetOf(Genre.ADVENTURE, Genre.ACTION)
+                testListOf(Genre.ADVENTURE, Genre.ACTION)
         );
     }
 

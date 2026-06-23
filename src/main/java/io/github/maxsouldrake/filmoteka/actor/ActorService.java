@@ -4,11 +4,13 @@ import io.github.maxsouldrake.filmoteka.actor.dto.ActorRequest;
 import io.github.maxsouldrake.filmoteka.actor.dto.DetailedActorResponse;
 import io.github.maxsouldrake.filmoteka.common.exception.ConflictException;
 import io.github.maxsouldrake.filmoteka.common.exception.ResourceNotFoundException;
+import io.github.maxsouldrake.filmoteka.film.Film;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Slf4j
@@ -54,7 +56,9 @@ public class ActorService {
     @Transactional
     public void deleteActor(Long id) {
         Actor actor = getActorOrThrow(id);
-        actor.getFilms().forEach(film -> film.removeActor(actor));
+        for (Film film : new ArrayList<>(actor.getFilms())) {
+            film.removeActor(actor);
+        }
         actorRepository.delete(actor);
         log.info("Deleted actor id={}", id);
     }

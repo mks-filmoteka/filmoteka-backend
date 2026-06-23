@@ -6,7 +6,7 @@ import io.github.maxsouldrake.filmoteka.film.Genre;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.util.Set;
+import java.util.List;
 
 @Schema(description = "Detailed film response with actors and directors")
 public record DetailedFilmResponse(
@@ -29,12 +29,12 @@ public record DetailedFilmResponse(
         String posterUrl,
 
         @Schema(description = "Film genres", example = "[\"ACTION\", \"ADVENTURE\"]")
-        Set<Genre> genres,
+        List<Genre> genres,
 
         @ArraySchema(schema = @Schema(implementation = ActorResponse.class))
-        Set<ActorResponse> actors,
+        List<ActorResponse> actors,
 
         @ArraySchema(schema = @Schema(implementation = DirectorResponse.class))
-        Set<DirectorResponse> directors
+        List<DirectorResponse> directors
 ) {
 }
