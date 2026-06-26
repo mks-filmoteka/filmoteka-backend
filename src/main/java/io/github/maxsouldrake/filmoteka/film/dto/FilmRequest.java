@@ -5,6 +5,7 @@ import io.github.maxsouldrake.filmoteka.director.dto.DirectorRequest;
 import io.github.maxsouldrake.filmoteka.film.Genre;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.URL;
 
@@ -41,17 +42,17 @@ public record FilmRequest(
         @Schema(description = "Film genres", example = "[\"ACTION\", \"ADVENTURE\"]")
         @NotEmpty
         @Size(max = 5)
-        List<@NotNull Genre> genres,
+        List<@NotNull @Valid Genre> genres,
 
         @ArraySchema(schema = @Schema(implementation = ActorRequest.class))
         @NotEmpty
         @Size(max = 20)
-        List<@NotNull ActorRequest> actors,
+        List<@NotNull @Valid ActorRequest> actors,
 
         @ArraySchema(schema = @Schema(implementation = DirectorRequest.class))
         @NotEmpty
         @Size(max = 5)
-        List<@NotNull DirectorRequest> directors
+        List<@NotNull @Valid DirectorRequest> directors
 ) {
 
 }
