@@ -26,7 +26,14 @@ public class Film extends BaseEntity {
     @Column(name = "release_year")
     private Integer releaseYear;
 
-    private String country;
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(
+            name = "film_countries",
+            joinColumns = @JoinColumn(name = "film_id")
+    )
+    @Column(name = "country")
+    private List<Country> countries = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)

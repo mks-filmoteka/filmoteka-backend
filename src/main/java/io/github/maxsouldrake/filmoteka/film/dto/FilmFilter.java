@@ -1,5 +1,6 @@
 package io.github.maxsouldrake.filmoteka.film.dto;
 
+import io.github.maxsouldrake.filmoteka.film.Country;
 import io.github.maxsouldrake.filmoteka.film.Genre;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
@@ -27,8 +28,7 @@ public record FilmFilter(
         @Schema(description = "Genres filter", example = "[\"ACTION\"]")
         Set<Genre> genres,
 
-        @Schema(description = "Country filter", example = "[\"USA\"]")
-        @Size(max = 100)
-        Set<String> country
+        @Schema(description = "Country filter", example = "[\"UNITED_STATES\"]")
+        Set<Country> countries
 ) {
 }

@@ -12,7 +12,7 @@ public final class FilmSpecification {
 
     public static Specification<Film> withFilters(FilmFilter filter) {
         return Specification.where(hasTitle(filter.title()))
-                .and(hasCountry(filter.country()))
+                .and(hasCountries(filter.countries()))
                 .and(hasReleaseYearFrom(filter.yearFrom()))
                 .and(hasReleaseYearTo(filter.yearTo()))
                 .and(hasGenres(filter.genres()));
@@ -26,15 +26,14 @@ public final class FilmSpecification {
                         : cb.like(cb.lower(root.get("title")), "%" + title.toLowerCase() + "%");
     }
 
-    public static Specification<Film> hasCountry(Set<String> country) {
+    public static Specification<Film> hasCountries(Set<Country> countries) {
 
         return (root, query, cb) -> {
             query.distinct(true);
-            return country == null || country.isEmpty()
+            return countries == null || countries.isEmpty()
                     ? cb.conjunction()
-                    : root.get("country").in(country);
+                    : root.join("countries").in(countries);
         };
-
     }
 
     public static Specification<Film> hasReleaseYearFrom(Integer releaseYearFrom) {

@@ -2,6 +2,7 @@ package io.github.maxsouldrake.filmoteka.film.dto;
 
 import io.github.maxsouldrake.filmoteka.actor.dto.ActorRequest;
 import io.github.maxsouldrake.filmoteka.director.dto.DirectorRequest;
+import io.github.maxsouldrake.filmoteka.film.Country;
 import io.github.maxsouldrake.filmoteka.film.Genre;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,10 +25,10 @@ public record FilmRequest(
         @Max(2100)
         Integer releaseYear,
 
-        @Schema(description = "Film country of production", example = "USA")
-        @NotBlank
-        @Size(max = 100)
-        String country,
+        @Schema(description = "Film countries of production", example = "[\"United States\", \"Italy\"]")
+        @NotEmpty
+        @Size(max = 5)
+        List<@NotNull @Valid Country> countries,
 
         @Schema(description = "Film description", example = "film description")
         @NotBlank
@@ -39,7 +40,7 @@ public record FilmRequest(
         @URL
         String posterUrl,
 
-        @Schema(description = "Film genres", example = "[\"ACTION\", \"ADVENTURE\"]")
+        @Schema(description = "Film genres", example = "[\"Action\", \"Adventure\"]")
         @NotEmpty
         @Size(max = 5)
         List<@NotNull @Valid Genre> genres,

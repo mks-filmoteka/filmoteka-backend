@@ -26,9 +26,12 @@ public interface FilmMapper {
     List<FilmResponse> filmsToFilmResponses(List<Film> films);
 
     @AfterMapping
-    default void normalizeGenres(FilmRequest request, @MappingTarget Film film) {
+    default void normalizeEnums(FilmRequest request, @MappingTarget Film film) {
         if (request.genres() != null) {
             film.setGenres(request.genres().stream().distinct().toList());
+        }
+        if (request.countries() != null) {
+            film.setCountries(request.countries().stream().distinct().toList());
         }
     }
 }

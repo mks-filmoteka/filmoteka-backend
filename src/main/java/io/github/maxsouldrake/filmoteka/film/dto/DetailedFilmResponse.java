@@ -2,6 +2,7 @@ package io.github.maxsouldrake.filmoteka.film.dto;
 
 import io.github.maxsouldrake.filmoteka.actor.dto.ActorResponse;
 import io.github.maxsouldrake.filmoteka.director.dto.DirectorResponse;
+import io.github.maxsouldrake.filmoteka.film.Country;
 import io.github.maxsouldrake.filmoteka.film.Genre;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,8 +20,8 @@ public record DetailedFilmResponse(
         @Schema(description = "Film release year", example = "1999")
         Integer releaseYear,
 
-        @Schema(description = "Film country of production", example = "USA")
-        String country,
+        @Schema(description = "Film countries of production", example = "[\"United States\", \"Italy\"]")
+        List<Country> countries,
 
         @Schema(description = "Film description", example = "film description")
         String description,
@@ -28,7 +29,7 @@ public record DetailedFilmResponse(
         @Schema(description = "Url of film poster", example = "https://film_poster")
         String posterUrl,
 
-        @Schema(description = "Film genres", example = "[\"ACTION\", \"ADVENTURE\"]")
+        @Schema(description = "Film genres", example = "[\"Action\", \"Adventure\"]")
         List<Genre> genres,
 
         @ArraySchema(schema = @Schema(implementation = ActorResponse.class))

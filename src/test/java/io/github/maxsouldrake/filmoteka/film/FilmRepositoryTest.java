@@ -33,9 +33,9 @@ class FilmRepositoryTest {
         assertTrue(loadedFilm.isPresent());
         assertEquals(FILM_TITLE, loadedFilm.get().getTitle());
         assertEquals(RELEASE_YEAR, loadedFilm.get().getReleaseYear());
-        assertEquals(FILM_COUNTRY, loadedFilm.get().getCountry());
         assertEquals(FILM_DESCRIPTION, loadedFilm.get().getDescription());
         assertEquals(FILM_POSTER_URL, loadedFilm.get().getPosterUrl());
+        assertThat(loadedFilm.get().getCountries()).containsExactlyInAnyOrder(Country.UNITED_STATES, Country.ITALY);
         assertThat(loadedFilm.get().getGenres()).containsExactlyInAnyOrder(Genre.ADVENTURE, Genre.ACTION);
     }
 
@@ -44,7 +44,7 @@ class FilmRepositoryTest {
         Film nonComplFilm = film();
         nonComplFilm.setTitle("different title");
         nonComplFilm.setReleaseYear(1999);
-        nonComplFilm.setCountry("different country");
+        nonComplFilm.setCountries(testListOf(Country.CANADA));
         nonComplFilm.setGenres(testListOf(Genre.CRIME));
         filmRepository.saveAndFlush(nonComplFilm);
         filmRepository.saveAndFlush(film());
@@ -54,7 +54,7 @@ class FilmRepositoryTest {
 
         assertThat(page.getContent()).extracting(Film::getTitle).containsExactlyInAnyOrder(FILM_TITLE);
         assertThat(page.getContent()).extracting(Film::getReleaseYear).containsExactlyInAnyOrder(RELEASE_YEAR);
-        assertThat(page.getContent()).extracting(Film::getCountry).containsExactlyInAnyOrder(FILM_COUNTRY);
+        assertThat(page.getContent().getFirst().getCountries()).containsExactlyInAnyOrder(Country.UNITED_STATES, Country.ITALY);
         assertThat(page.getContent().getFirst().getGenres()).containsExactlyInAnyOrder(Genre.ADVENTURE, Genre.ACTION);
     }
 

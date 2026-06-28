@@ -51,7 +51,7 @@ class FilmControllerTest {
                 .andExpect(jsonPath("$.id").value(FILM_ID))
                 .andExpect(jsonPath("$.title").value(FILM_TITLE))
                 .andExpect(jsonPath("$.releaseYear").value(RELEASE_YEAR))
-                .andExpect(jsonPath("$.country").value(FILM_COUNTRY))
+                .andExpect(jsonPath("$.countries[0]").value(Country.UNITED_STATES.getJsonValue()))
                 .andExpect(jsonPath("$.description").value(FILM_DESCRIPTION))
                 .andExpect(jsonPath("$.posterUrl").value(FILM_POSTER_URL))
                 .andExpect(jsonPath("$.actors[0].name").value(ACTOR_NAME))
@@ -88,7 +88,7 @@ class FilmControllerTest {
                         containsInAnyOrder(
                                 "title",
                                 "releaseYear",
-                                "country",
+                                "countries",
                                 "description",
                                 "posterUrl",
                                 "genres",
@@ -160,7 +160,7 @@ class FilmControllerTest {
                         .param("title", "film title")
                         .param("yearFrom", "2000")
                         .param("yearTo", "2010")
-                        .param("country", "film country")
+                        .param("countries", "UNITED_STATES", "ITALY")
                         .param("genres", "ACTION", "ADVENTURE"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].title").value(FILM_TITLE));
