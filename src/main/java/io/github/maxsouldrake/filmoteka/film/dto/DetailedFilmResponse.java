@@ -26,8 +26,8 @@ public record DetailedFilmResponse(
         @Schema(description = "Film description", example = "film description")
         String description,
 
-        @Schema(description = "Url of film poster", example = "https://film_poster")
-        String posterUrl,
+        @Schema(description = "Film poster name", example = "00000000-0000-0000-0000-000000000000.jpg")
+        String posterName,
 
         @Schema(description = "Film genres", example = "[\"Action\", \"Adventure\"]")
         List<Genre> genres,

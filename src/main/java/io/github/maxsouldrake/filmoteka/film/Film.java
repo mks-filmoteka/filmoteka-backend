@@ -47,8 +47,8 @@ public class Film extends BaseEntity {
     @Column(columnDefinition = "text")
     private String description;
 
-    @Column(name = "poster_url")
-    private String posterUrl;
+    @Column(name = "poster_name")
+    private String posterName;
 
     @ManyToMany
     @JoinTable(

@@ -20,7 +20,7 @@ class FilmMapperTest {
         assertThat(film.getReleaseYear()).isEqualTo(RELEASE_YEAR);
         assertThat(film.getCountries()).containsExactlyInAnyOrder(Country.UNITED_STATES, Country.ITALY);
         assertThat(film.getDescription()).isEqualTo(FILM_DESCRIPTION);
-        assertThat(film.getPosterUrl()).isEqualTo(FILM_POSTER_URL);
+        assertThat(film.getPosterName()).isEqualTo(FILM_POSTER_NAME);
         assertThat(film.getGenres()).containsExactlyInAnyOrder(Genre.ADVENTURE, Genre.ACTION);
     }
 

@@ -53,7 +53,7 @@ class FilmControllerTest {
                 .andExpect(jsonPath("$.releaseYear").value(RELEASE_YEAR))
                 .andExpect(jsonPath("$.countries[0]").value(Country.UNITED_STATES.getJsonValue()))
                 .andExpect(jsonPath("$.description").value(FILM_DESCRIPTION))
-                .andExpect(jsonPath("$.posterUrl").value(FILM_POSTER_URL))
+                .andExpect(jsonPath("$.posterName").value(FILM_POSTER_NAME))
                 .andExpect(jsonPath("$.actors[0].name").value(ACTOR_NAME))
                 .andExpect(jsonPath("$.directors[0].name").value(DIRECTOR_NAME));
 
@@ -90,7 +90,7 @@ class FilmControllerTest {
                                 "releaseYear",
                                 "countries",
                                 "description",
-                                "posterUrl",
+                                "posterName",
                                 "genres",
                                 "actors",
                                 "directors")));

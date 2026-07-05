@@ -18,7 +18,7 @@ public class FilmTestData {
     public static final String FILM_TITLE = "film title";
     public static final int RELEASE_YEAR = 2000;
     public static final String FILM_DESCRIPTION = "film description";
-    public static final String FILM_POSTER_URL = "http://film_poster";
+    public static final String FILM_POSTER_NAME = "00000000-0000-0000-0000-000000000000.jpg";
 
     public static Film film() {
         Film film = new Film();
@@ -26,7 +26,7 @@ public class FilmTestData {
         film.setReleaseYear(RELEASE_YEAR);
         film.setCountries(testListOf(Country.UNITED_STATES, Country.ITALY));
         film.setDescription(FILM_DESCRIPTION);
-        film.setPosterUrl(FILM_POSTER_URL);
+        film.setPosterName(FILM_POSTER_NAME);
         film.setGenres(testListOf(Genre.ADVENTURE, Genre.ACTION));
         return film;
     }
@@ -43,7 +43,7 @@ public class FilmTestData {
                 RELEASE_YEAR,
                 testListOf(Country.UNITED_STATES, Country.ITALY),
                 FILM_DESCRIPTION,
-                FILM_POSTER_URL,
+                FILM_POSTER_NAME,
                 testListOf(Genre.ADVENTURE, Genre.ACTION),
                 null,
                 null
@@ -56,7 +56,7 @@ public class FilmTestData {
                 1700,
                 testListOf(),
                 "",
-                "url",
+                "",
                 testListOf(),
                 testListOf(),
                 testListOf()
@@ -69,7 +69,7 @@ public class FilmTestData {
                 RELEASE_YEAR,
                 testListOf(Country.UNITED_STATES, Country.ITALY),
                 FILM_DESCRIPTION,
-                FILM_POSTER_URL,
+                FILM_POSTER_NAME,
                 testListOf(Genre.ADVENTURE, Genre.ACTION),
                 testListOf(actorRequest()),
                 testListOf(directorRequest())
@@ -82,7 +82,7 @@ public class FilmTestData {
                 1999,
                 testListOf(Country.CANADA),
                 FILM_DESCRIPTION,
-                FILM_POSTER_URL,
+                FILM_POSTER_NAME,
                 testListOf(Genre.COMEDY),
                 null,
                 null
@@ -96,7 +96,7 @@ public class FilmTestData {
                 RELEASE_YEAR,
                 testListOf(Country.UNITED_STATES, Country.ITALY),
                 FILM_DESCRIPTION,
-                FILM_POSTER_URL,
+                FILM_POSTER_NAME,
                 testListOf(Genre.ADVENTURE, Genre.ACTION),
                 testListOf(),
                 testListOf()
@@ -110,7 +110,7 @@ public class FilmTestData {
                 RELEASE_YEAR,
                 testListOf(Country.UNITED_STATES, Country.ITALY),
                 FILM_DESCRIPTION,
-                FILM_POSTER_URL,
+                FILM_POSTER_NAME,
                 testListOf(Genre.ADVENTURE, Genre.ACTION),
                 testListOf(actorResponse()),
                 testListOf(directorResponse())
@@ -123,7 +123,7 @@ public class FilmTestData {
                 FILM_TITLE,
                 testListOf(Country.UNITED_STATES, Country.ITALY),
                 RELEASE_YEAR,
-                FILM_POSTER_URL,
+                FILM_POSTER_NAME,
                 testListOf(Genre.ADVENTURE, Genre.ACTION)
         );
     }

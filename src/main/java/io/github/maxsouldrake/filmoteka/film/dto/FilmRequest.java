@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import org.hibernate.validator.constraints.URL;
 
 import java.util.List;
 
@@ -35,10 +34,10 @@ public record FilmRequest(
         @Size(max = 1000)
         String description,
 
-        @Schema(description = "Url of film poster", example = "http://film_poster")
-        @NotBlank
-        @URL
-        String posterUrl,
+        @Schema(description = "Film poster name", example = "00000000-0000-0000-0000-000000000000.jpg")
+        @Pattern(regexp = "^[a-zA-Z0-9_-]+\\.(jpg|jpeg|png)$",
+                message = "Poster file name must be a valid image file name")
+        String posterName,
 
         @Schema(description = "Film genres", example = "[\"Action\", \"Adventure\"]")
         @NotEmpty

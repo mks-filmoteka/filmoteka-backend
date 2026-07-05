@@ -34,7 +34,7 @@ class FilmRepositoryTest {
         assertEquals(FILM_TITLE, loadedFilm.get().getTitle());
         assertEquals(RELEASE_YEAR, loadedFilm.get().getReleaseYear());
         assertEquals(FILM_DESCRIPTION, loadedFilm.get().getDescription());
-        assertEquals(FILM_POSTER_URL, loadedFilm.get().getPosterUrl());
+        assertEquals(FILM_POSTER_NAME, loadedFilm.get().getPosterName());
         assertThat(loadedFilm.get().getCountries()).containsExactlyInAnyOrder(Country.UNITED_STATES, Country.ITALY);
         assertThat(loadedFilm.get().getGenres()).containsExactlyInAnyOrder(Genre.ADVENTURE, Genre.ACTION);
     }
