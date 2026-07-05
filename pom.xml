@@ -10,17 +10,27 @@
         <relativePath/>
     </parent>
 
-    <groupId>io.github.maxsouldrake</groupId>
+    <groupId>io.github.mksfilmoteka</groupId>
     <artifactId>filmoteka-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>filmoteka-backend</name>
-    <description>filmoteka</description>
+    <description>filmoteka-backend</description>
 
     <properties>
         <java.version>25</java.version>
         <testcontainers.version>1.20.4</testcontainers.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>1.28.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <!-- ======================================== -->
     <!--               DEPENDENCIES               -->
