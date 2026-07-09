@@ -10,7 +10,10 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring", uses = FilmMapper.class)
 public interface DirectorMapper {
     Director directorRequestToDirector(DirectorRequest request);
+
     void updateDirectorRequestToDirector(DirectorRequest request, @MappingTarget Director director);
+
     DirectorResponse directorToDirectorResponse(Director director);
+
     DetailedDirectorResponse directorToDetailedDirectorResponse(Director director);
 }

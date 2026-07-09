@@ -1,11 +1,13 @@
 package io.github.mksfilmoteka.backend.film;
 
 import io.github.mksfilmoteka.backend.film.dto.DetailedFilmResponse;
+import io.github.mksfilmoteka.backend.film.dto.FilmRequest;
 import io.github.mksfilmoteka.backend.film.dto.FilmResponse;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import static io.github.mksfilmoteka.backend.film.FilmTestData.*;
+import static io.github.mksfilmoteka.backend.util.TestUtil.testListOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class FilmMapperTest {
@@ -22,6 +24,24 @@ class FilmMapperTest {
         assertThat(film.getDescription()).isEqualTo(FILM_DESCRIPTION);
         assertThat(film.getPosterName()).isEqualTo(FILM_POSTER_NAME);
         assertThat(film.getGenres()).containsExactlyInAnyOrder(Genre.ADVENTURE, Genre.ACTION);
+    }
+
+    @Test
+    void shouldMapFilmRequestToFilmWithDistinctEnums() {
+        FilmRequest request = new FilmRequest(
+                FILM_TITLE,
+                RELEASE_YEAR,
+                testListOf(Country.UNITED_STATES, Country.UNITED_STATES, Country.ITALY),
+                FILM_DESCRIPTION,
+                FILM_POSTER_NAME,
+                testListOf(Genre.ACTION, Genre.ACTION, Genre.ADVENTURE),
+                null,
+                null);
+
+        Film film = filmMapper.filmRequestToFilm(request);
+
+        assertThat(film.getCountries()).containsExactly(Country.UNITED_STATES, Country.ITALY);
+        assertThat(film.getGenres()).containsExactly(Genre.ACTION, Genre.ADVENTURE);
     }
 
     @Test

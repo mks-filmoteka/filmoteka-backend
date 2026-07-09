@@ -8,8 +8,11 @@ import io.github.mksfilmoteka.backend.film.dto.FilmFilter;
 import io.github.mksfilmoteka.backend.film.dto.FilmRequest;
 import io.github.mksfilmoteka.backend.film.dto.FilmResponse;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,13 +22,12 @@ import java.util.List;
 import static io.github.mksfilmoteka.backend.actor.ActorTestData.ACTOR_NAME;
 import static io.github.mksfilmoteka.backend.director.DirectorTestData.DIRECTOR_NAME;
 import static io.github.mksfilmoteka.backend.film.FilmTestData.*;
-import static io.github.mksfilmoteka.backend.film.FilmTestData.invalidFilmRequest;
 import static io.github.mksfilmoteka.backend.util.TestUtil.OBJECT_MAPPER;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -67,8 +69,8 @@ class FilmControllerTest {
         when(filmService.createFilm(any(FilmRequest.class))).thenThrow(new ConflictException(message));
 
         mockMvc.perform(post("/api/v1/films")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(OBJECT_MAPPER.writeValueAsString(filmRequestFull()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(OBJECT_MAPPER.writeValueAsString(filmRequestFull()))
                 )
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value(message))
@@ -79,8 +81,8 @@ class FilmControllerTest {
     @Test
     void shouldThrowOnCreateIfInvalidRequest() throws Exception {
         mockMvc.perform(post("/api/v1/films")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(OBJECT_MAPPER.writeValueAsString(invalidFilmRequest()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(OBJECT_MAPPER.writeValueAsString(invalidFilmRequest()))
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorCode.VALIDATION_FAILED.name()))
@@ -169,6 +171,33 @@ class FilmControllerTest {
     }
 
     @Test
+    void shouldUseFixedPageSizeAndAppendIdSort() throws Exception {
+        PageResponse<FilmResponse> response =
+                new PageResponse<>(List.of(), 2, 100, 0, 0);
+        when(filmService.getFilms(any(FilmFilter.class), any())).thenReturn(response);
+
+        mockMvc.perform(get("/api/v1/films")
+                        .param("page", "2")
+                        .param("size", "5")
+                        .param("sort", "title,desc"))
+                .andExpect(status().isOk());
+
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(filmService).getFilms(any(FilmFilter.class), pageableCaptor.capture());
+
+        Pageable pageable = pageableCaptor.getValue();
+        Sort.Order titleOrder = pageable.getSort().getOrderFor("title");
+        Sort.Order idOrder = pageable.getSort().getOrderFor("id");
+
+        assertThat(pageable.getPageNumber()).isEqualTo(2);
+        assertThat(pageable.getPageSize()).isEqualTo(100);
+        assertThat(titleOrder).isNotNull();
+        assertThat(titleOrder.getDirection()).isEqualTo(Sort.Direction.DESC);
+        assertThat(idOrder).isNotNull();
+        assertThat(idOrder.getDirection()).isEqualTo(Sort.Direction.ASC);
+    }
+
+    @Test
     void shouldUpdateFilm() throws Exception {
         when(filmService.updateFilm(eq(FILM_ID), any(FilmRequest.class))).thenReturn(detailedFilmResponseFull());
 
@@ -185,10 +214,64 @@ class FilmControllerTest {
     }
 
     @Test
+    void shouldThrowOnUpdateIfConflict() throws Exception {
+        String message = String.format("Film with title '%s' and release year '%s' already exists",
+                FILM_TITLE, RELEASE_YEAR);
+        when(filmService.updateFilm(eq(FILM_ID), any(FilmRequest.class))).thenThrow(new ConflictException(message));
+
+        mockMvc.perform(
+                        put("/api/v1/films/{id}", FILM_ID)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(OBJECT_MAPPER.writeValueAsString(filmRequestFull()))
+                )
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value(message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.CONFLICT.name()));
+
+        verify(filmService).updateFilm(eq(FILM_ID), any(FilmRequest.class));
+    }
+
+    @Test
+    void shouldThrowOnUpdateIfInvalidRequest() throws Exception {
+        mockMvc.perform(
+                        put("/api/v1/films/{id}", FILM_ID)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(OBJECT_MAPPER.writeValueAsString(invalidFilmRequest()))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(ErrorCode.VALIDATION_FAILED.name()))
+                .andExpect(jsonPath("$.errorDetails[*].field",
+                        containsInAnyOrder(
+                                "title",
+                                "releaseYear",
+                                "countries",
+                                "description",
+                                "posterName",
+                                "genres",
+                                "actors",
+                                "directors")));
+
+        verify(filmService, never()).updateFilm(eq(FILM_ID), any(FilmRequest.class));
+    }
+
+    @Test
     void shouldDeleteFilm() throws Exception {
 
         mockMvc.perform(delete("/api/v1/films/{id}", FILM_ID))
                 .andExpect(status().isNoContent());
+
+        verify(filmService).deleteFilm(FILM_ID);
+    }
+
+    @Test
+    void shouldThrowOnDeleteIfFilmNotFound() throws Exception {
+        String message = "Film with id " + FILM_ID + " not found";
+        doThrow(new ResourceNotFoundException(message)).when(filmService).deleteFilm(FILM_ID);
+
+        mockMvc.perform(delete("/api/v1/films/{id}", FILM_ID))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value(message))
+                .andExpect(jsonPath("$.code").value(ErrorCode.NOT_FOUND.name()));
 
         verify(filmService).deleteFilm(FILM_ID);
     }

@@ -39,9 +39,9 @@ public final class FilmSpecification {
     public static Specification<Film> hasReleaseYearFrom(Integer releaseYearFrom) {
 
         return (root, query, cb) ->
-            releaseYearFrom == null
-                    ? cb.conjunction()
-                    : cb.greaterThanOrEqualTo(root.get("releaseYear"), releaseYearFrom);
+                releaseYearFrom == null
+                        ? cb.conjunction()
+                        : cb.greaterThanOrEqualTo(root.get("releaseYear"), releaseYearFrom);
     }
 
     public static Specification<Film> hasReleaseYearTo(Integer releaseYearTo) {

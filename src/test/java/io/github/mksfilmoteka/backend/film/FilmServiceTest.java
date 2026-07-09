@@ -78,6 +78,29 @@ class FilmServiceTest {
     }
 
     @Test
+    void shouldCreateFilmWithDistinctActorsAndDirectors() {
+        Film film = film();
+        Film loadedFilm = loadedFilm();
+        var actor = loadedActor();
+        var director = loadedDirector();
+        FilmRequest request = filmRequestWithDuplications();
+
+        when(filmMapper.filmRequestToFilm(request)).thenReturn(film);
+        when(actorService.findOrCreate(actorRequest())).thenReturn(actor);
+        when(directorService.findOrCreate(directorRequest())).thenReturn(director);
+        when(filmMapper.filmToDetailedFilmResponse(loadedFilm)).thenReturn(detailedFilmResponseFull());
+        when(filmRepository.save(film)).thenReturn(loadedFilm);
+
+        DetailedFilmResponse response = filmService.createFilm(request);
+
+        assertThat(response).isEqualTo(detailedFilmResponseFull());
+        assertThat(film.getActors()).containsExactly(actor);
+        assertThat(film.getDirectors()).containsExactly(director);
+        verify(actorService, times(1)).findOrCreate(actorRequest());
+        verify(directorService, times(1)).findOrCreate(directorRequest());
+    }
+
+    @Test
     void shouldThrowOnCreateIfConflict() {
         when(filmRepository.existsByTitleAndReleaseYear(anyString(), anyInt())).thenReturn(true);
         FilmRequest request = filmRequestFull();
@@ -163,9 +186,26 @@ class FilmServiceTest {
     }
 
     @Test
+    void shouldThrowOnUpdateIfTitleAndReleaseYearAlreadyExist() {
+        Film loadedFilm = loadedFilm();
+        loadedFilm.setTitle("old title");
+        FilmRequest request = filmRequestFull();
+
+        when(filmRepository.findById(FILM_ID)).thenReturn(Optional.of(loadedFilm));
+        when(filmRepository.existsByTitleAndReleaseYear(FILM_TITLE, RELEASE_YEAR)).thenReturn(true);
+
+        assertThrows(ConflictException.class, () -> filmService.updateFilm(FILM_ID, request));
+
+        verify(filmRepository).existsByTitleAndReleaseYear(FILM_TITLE, RELEASE_YEAR);
+        verify(filmRepository, never()).save(any());
+        verifyNoInteractions(filmMapper, actorService, directorService);
+    }
+
+    @Test
     void shouldUpdateFilmIfExists() {
         Film loadedFilm = loadedFilm();
         loadedFilm.setTitle("old title");
+        FilmRequest request = filmRequestWithDuplications();
 
         when(filmRepository.findById(FILM_ID)).thenReturn(Optional.of(loadedFilm));
         when(actorService.findOrCreate(any())).thenReturn(loadedActor());
@@ -177,16 +217,16 @@ class FilmServiceTest {
                 .thenAnswer(invocation -> invocation.getArgument(0));
         when(filmMapper.filmToDetailedFilmResponse(any(Film.class))).thenReturn(detailedFilmResponseFull());
 
-        DetailedFilmResponse response = filmService.updateFilm(FILM_ID, filmRequestFull());
+        DetailedFilmResponse response = filmService.updateFilm(FILM_ID, request);
 
         assertThat(response).isEqualTo(detailedFilmResponseFull());
         ArgumentCaptor<Film> captor = ArgumentCaptor.forClass(Film.class);
 
         verify(filmRepository).save(captor.capture());
         assertThat(captor.getValue().getTitle()).isEqualTo(FILM_TITLE);
-        verify(filmMapper).updateFilmRequestToFilm(filmRequestFull(), loadedFilm);
-        verify(actorService).findOrCreate(actorRequest());
-        verify(directorService).findOrCreate(directorRequest());
+        verify(filmMapper).updateFilmRequestToFilm(request, loadedFilm);
+        verify(actorService, times(1)).findOrCreate(actorRequest());
+        verify(directorService, times(1)).findOrCreate(directorRequest());
         verify(filmMapper).filmToDetailedFilmResponse(any(Film.class));
     }
 

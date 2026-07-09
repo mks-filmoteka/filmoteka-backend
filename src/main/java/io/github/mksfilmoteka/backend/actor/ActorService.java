@@ -65,6 +65,6 @@ public class ActorService {
 
     private Actor getActorOrThrow(Long id) {
         return actorRepository.findById(id).orElseThrow(() ->
-                        new ResourceNotFoundException("Actor with id " + id + " not found"));
+                new ResourceNotFoundException("Actor with id " + id + " not found"));
     }
 }

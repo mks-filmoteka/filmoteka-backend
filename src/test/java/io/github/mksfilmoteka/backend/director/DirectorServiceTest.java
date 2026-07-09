@@ -1,5 +1,6 @@
 package io.github.mksfilmoteka.backend.director;
 
+import io.github.mksfilmoteka.backend.common.exception.ConflictException;
 import io.github.mksfilmoteka.backend.common.exception.ResourceNotFoundException;
 import io.github.mksfilmoteka.backend.director.dto.DetailedDirectorResponse;
 import io.github.mksfilmoteka.backend.director.dto.DirectorRequest;
@@ -104,16 +105,33 @@ class DirectorServiceTest {
     }
 
     @Test
+    void shouldThrowOnUpdateIfNameAlreadyExists() {
+        Director loadedDirector = loadedDirector();
+        loadedDirector.setName("old name");
+        DirectorRequest request = directorRequest();
+
+        when(directorRepository.findById(DIRECTOR_ID)).thenReturn(Optional.of(loadedDirector));
+        when(directorRepository.existsByName(DIRECTOR_NAME)).thenReturn(true);
+
+        assertThrows(ConflictException.class, () -> directorService.updateDirector(DIRECTOR_ID, request));
+
+        verify(directorRepository).existsByName(DIRECTOR_NAME);
+        verify(directorRepository, never()).save(any());
+        verifyNoInteractions(directorMapper);
+    }
+
+    @Test
     void shouldDeleteDirectorIfExists() {
         Film film = loadedFilm();
         Director director = loadedDirector();
         film.addDirector(director);
-        director.getFilms().add(film);
 
         when(directorRepository.findById(DIRECTOR_ID)).thenReturn(Optional.of(director));
 
         directorService.deleteDirector(DIRECTOR_ID);
 
+        assertThat(film.getDirectors()).doesNotContain(director);
+        assertThat(director.getFilms()).doesNotContain(film);
         verify(directorRepository).delete(director);
     }
 

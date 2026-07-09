@@ -32,7 +32,7 @@ public class FilmService {
 
     public PageResponse<FilmResponse> getFilms(FilmFilter filter, Pageable pageable) {
         log.debug("Searching films. filter={}, pageable={}", filter, pageable);
-        
+
         Specification<Film> specification = FilmSpecification.withFilters(filter);
         Page<Film> page = filmRepository.findAll(specification, pageable);
         List<FilmResponse> content = filmMapper.filmsToFilmResponses(page.getContent());

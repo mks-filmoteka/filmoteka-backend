@@ -76,6 +76,19 @@ public class FilmTestData {
         );
     }
 
+    public static FilmRequest filmRequestWithDuplications() {
+        return new FilmRequest(
+                FILM_TITLE,
+                RELEASE_YEAR,
+                testListOf(Country.UNITED_STATES, Country.ITALY),
+                FILM_DESCRIPTION,
+                FILM_POSTER_NAME,
+                testListOf(Genre.ADVENTURE, Genre.ACTION),
+                testListOf(actorRequest(), actorRequest()),
+                testListOf(directorRequest(), directorRequest())
+        );
+    }
+
     public static FilmRequest updateFilmRequest() {
         return new FilmRequest(
                 "updated title",

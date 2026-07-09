@@ -2,6 +2,7 @@ package io.github.mksfilmoteka.backend.actor;
 
 import io.github.mksfilmoteka.backend.actor.dto.ActorRequest;
 import io.github.mksfilmoteka.backend.actor.dto.DetailedActorResponse;
+import io.github.mksfilmoteka.backend.common.exception.ConflictException;
 import io.github.mksfilmoteka.backend.common.exception.ResourceNotFoundException;
 import io.github.mksfilmoteka.backend.film.Film;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,8 @@ class ActorServiceTest {
     @Mock
     private ActorRepository actorRepository;
 
-    @Mock ActorMapper actorMapper;
+    @Mock
+    ActorMapper actorMapper;
 
     @InjectMocks
     private ActorService actorService;
@@ -102,16 +104,33 @@ class ActorServiceTest {
     }
 
     @Test
+    void shouldThrowOnUpdateIfNameAlreadyExists() {
+        Actor loadedActor = loadedActor();
+        loadedActor.setName("old name");
+        ActorRequest request = actorRequest();
+
+        when(actorRepository.findById(ACTOR_ID)).thenReturn(Optional.of(loadedActor));
+        when(actorRepository.existsByName(ACTOR_NAME)).thenReturn(true);
+
+        assertThrows(ConflictException.class, () -> actorService.updateActor(ACTOR_ID, request));
+
+        verify(actorRepository).existsByName(ACTOR_NAME);
+        verify(actorRepository, never()).save(any());
+        verifyNoInteractions(actorMapper);
+    }
+
+    @Test
     void shouldDeleteActorIfExists() {
         Film film = loadedFilm();
         Actor actor = loadedActor();
         film.addActor(actor);
-        actor.getFilms().add(film);
 
         when(actorRepository.findById(ACTOR_ID)).thenReturn(Optional.of(actor));
 
         actorService.deleteActor(ACTOR_ID);
 
+        assertThat(film.getActors()).doesNotContain(actor);
+        assertThat(actor.getFilms()).doesNotContain(film);
         verify(actorRepository).delete(actor);
     }
 

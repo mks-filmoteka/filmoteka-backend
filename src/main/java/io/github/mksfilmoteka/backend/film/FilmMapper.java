@@ -22,7 +22,9 @@ public interface FilmMapper {
     void updateFilmRequestToFilm(FilmRequest request, @MappingTarget Film film);
 
     FilmResponse filmToFilmResponse(Film film);
+
     DetailedFilmResponse filmToDetailedFilmResponse(Film film);
+
     List<FilmResponse> filmsToFilmResponses(List<Film> films);
 
     @AfterMapping
