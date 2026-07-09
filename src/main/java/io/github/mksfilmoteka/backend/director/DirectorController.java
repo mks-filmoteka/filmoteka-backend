@@ -1,8 +1,11 @@
 package io.github.mksfilmoteka.backend.director;
 
+import io.github.mksfilmoteka.backend.common.exception.ErrorResponse;
 import io.github.mksfilmoteka.backend.director.dto.DetailedDirectorResponse;
 import io.github.mksfilmoteka.backend.director.dto.DirectorRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -22,8 +25,18 @@ public class DirectorController {
             summary = "Get director by id",
             description = "Returns director with details including list films"
     )
-    @ApiResponse(responseCode = "200", description = "Director returned")
-    @ApiResponse(responseCode = "404", description = "Director not found")
+    @ApiResponse(responseCode = "200", description = "Director returned",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = DetailedDirectorResponse.class)
+            )
+    )
+    @ApiResponse(responseCode = "404", description = "Director not found",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+            )
+    )
     @GetMapping("/{id}")
     public ResponseEntity<DetailedDirectorResponse> getDirector(@PathVariable Long id) {
         DetailedDirectorResponse response = directorService.findById(id);
@@ -35,10 +48,30 @@ public class DirectorController {
             summary = "Update director",
             description = "Update director fields"
     )
-    @ApiResponse(responseCode = "200", description = "Director updated")
-    @ApiResponse(responseCode = "400", description = "Validation error")
-    @ApiResponse(responseCode = "404", description = "Director not found")
-    @ApiResponse(responseCode = "409", description = "Name conflict")
+    @ApiResponse(responseCode = "200", description = "Director updated",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = DetailedDirectorResponse.class)
+            )
+    )
+    @ApiResponse(responseCode = "400", description = "Validation error",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+            )
+    )
+    @ApiResponse(responseCode = "404", description = "Director not found",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+            )
+    )
+    @ApiResponse(responseCode = "409", description = "Name conflict",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+            )
+    )
     @PutMapping("/{id}")
     public ResponseEntity<DetailedDirectorResponse> updateDirector(
             @PathVariable Long id,
@@ -53,7 +86,11 @@ public class DirectorController {
             description = "Deletes director by id"
     )
     @ApiResponse(responseCode = "204", description = "Director deleted")
-    @ApiResponse(responseCode = "404", description = "Director not found")
+    @ApiResponse(responseCode = "404", description = "Director not found",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class))
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDirector(@PathVariable Long id) {
         directorService.deleteDirector(id);

@@ -2,7 +2,10 @@ package io.github.mksfilmoteka.backend.actor;
 
 import io.github.mksfilmoteka.backend.actor.dto.ActorRequest;
 import io.github.mksfilmoteka.backend.actor.dto.DetailedActorResponse;
+import io.github.mksfilmoteka.backend.common.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -22,8 +25,18 @@ public class ActorController {
             summary = "Get actor by id",
             description = "Returns actor with details including list films"
     )
-    @ApiResponse(responseCode = "200", description = "Actor returned")
-    @ApiResponse(responseCode = "404", description = "Actor not found")
+    @ApiResponse(responseCode = "200", description = "Actor returned",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = DetailedActorResponse.class)
+            )
+    )
+    @ApiResponse(responseCode = "404", description = "Actor not found",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+            )
+    )
     @GetMapping("/{id}")
     public ResponseEntity<DetailedActorResponse> getActor(@PathVariable Long id) {
         DetailedActorResponse response = actorService.findById(id);
@@ -35,10 +48,30 @@ public class ActorController {
             summary = "Update actor",
             description = "Update actor fields"
     )
-    @ApiResponse(responseCode = "200", description = "Actor updated")
-    @ApiResponse(responseCode = "400", description = "Validation error")
-    @ApiResponse(responseCode = "404", description = "Actor not found")
-    @ApiResponse(responseCode = "409", description = "Name conflict")
+    @ApiResponse(responseCode = "200", description = "Actor updated",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = DetailedActorResponse.class)
+            )
+    )
+    @ApiResponse(responseCode = "400", description = "Validation error",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+            )
+    )
+    @ApiResponse(responseCode = "404", description = "Actor not found",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+            )
+    )
+    @ApiResponse(responseCode = "409", description = "Name conflict",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+            )
+    )
     @PutMapping("/{id}")
     public ResponseEntity<DetailedActorResponse> updateActor(
             @PathVariable Long id,
@@ -53,7 +86,12 @@ public class ActorController {
             description = "Deletes actor by id"
     )
     @ApiResponse(responseCode = "204", description = "Actor deleted")
-    @ApiResponse(responseCode = "404", description = "Actor not found")
+    @ApiResponse(responseCode = "404", description = "Actor not found",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+            )
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteActor(@PathVariable Long id) {
         actorService.deleteActor(id);
