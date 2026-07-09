@@ -10,12 +10,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.exc.InvalidFormatException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -52,8 +54,8 @@ public class GlobalExceptionHandler {
                         e.getDefaultMessage()))
                 .toList();
 
-        ErrorResponse errorResponse = buildResponse(
-                HttpStatus.BAD_REQUEST, "Validation failed", request, ErrorCode.VALIDATION_FAILED, details);
+        ErrorResponse errorResponse =
+                buildResponse("Validation failed", request, ErrorCode.VALIDATION_FAILED, details);
 
         log.warn("Validation failed. path={}", request.getRequestURI());
         return ResponseEntity.badRequest().body(errorResponse);
@@ -64,10 +66,12 @@ public class GlobalExceptionHandler {
             MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
 
         String message = String.format("Invalid value '%s' for parameter '%s'", ex.getValue(), ex.getName());
+        List<ErrorDetail> errorDetails =
+                List.of(new ErrorDetail(ex.getName(), expectedValueMessage(ex.getRequiredType())));
 
         log.warn("Invalid argument type. path={}", request.getRequestURI());
         return ResponseEntity.badRequest()
-                .body(buildResponse(HttpStatus.BAD_REQUEST, message, request, ErrorCode.BAD_REQUEST));
+                .body(buildResponse(message, request, ErrorCode.BAD_REQUEST, errorDetails));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -79,35 +83,28 @@ public class GlobalExceptionHandler {
         List<ErrorDetail> errorDetails = new ArrayList<>();
 
         if (cause instanceof InvalidFormatException invalidFormatException) {
-            message = "Invalid value '%s'".formatted(invalidFormatException.getValue());
-            if (invalidFormatException.getTargetType().isEnum()) {
-                String allowedValues = Arrays.stream(invalidFormatException.getTargetType().getEnumConstants())
-                        .map(Object::toString)
-                        .collect(Collectors.joining(", "));
-                errorDetails.add(new ErrorDetail("genres", "Allowed values are: " + allowedValues));
-            }
+            String field = extractFieldName(invalidFormatException);
+            message = "Invalid value '%s' for field '%s'".formatted(invalidFormatException.getValue(), field);
+            errorDetails.add(new ErrorDetail(field, expectedValueMessage(invalidFormatException.getTargetType())));
         }
 
         log.warn("Invalid value. path={}", request.getRequestURI());
         return ResponseEntity.badRequest()
-                .body(buildResponse(HttpStatus.BAD_REQUEST, message, request, ErrorCode.BAD_REQUEST, errorDetails));
+                .body(buildResponse(message, request, ErrorCode.BAD_REQUEST, errorDetails));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(
             Exception ex, HttpServletRequest request) {
 
+        String message = "Unexpected error occurred";
+
         log.error("Unexpected error. path={}", request.getRequestURI(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(buildResponse(
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                        ex.getCause().getMessage(),
-                        request,
-                        ErrorCode.INTERNAL_ERROR));
+                .body(buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, message, request, ErrorCode.INTERNAL_ERROR));
     }
 
     private ErrorResponse buildResponse(
-            HttpStatus status,
             String message,
             HttpServletRequest request,
             ErrorCode code,
@@ -115,7 +112,7 @@ public class GlobalExceptionHandler {
 
         return new ErrorResponse(
                 LocalDateTime.now(),
-                status.value(),
+                HttpStatus.BAD_REQUEST.value(),
                 message,
                 request.getRequestURI(),
                 code,
@@ -127,5 +124,28 @@ public class GlobalExceptionHandler {
 
         return new ErrorResponse(
                 LocalDateTime.now(), status.value(), message, request.getRequestURI(), code, List.of());
+    }
+
+    private String extractFieldName(InvalidFormatException ex) {
+        return ex.getPath()
+                .stream()
+                .map(JacksonException.Reference::getPropertyName)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse("requestBody");
+    }
+
+    private String expectedValueMessage(Class<?> targetType) {
+        if (targetType != null && targetType.isEnum()) {
+            return "Allowed values are: " + allowedValues(targetType);
+        }
+
+        return "Expected type: " + (targetType == null ? "valid value" : targetType.getSimpleName());
+    }
+
+    private String allowedValues(Class<?> enumType) {
+        return Arrays.stream(enumType.getEnumConstants())
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
     }
 }

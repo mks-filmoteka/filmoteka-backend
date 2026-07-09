@@ -153,4 +153,19 @@ public class FilmTestData {
     public static FilmFilter emptyFilmFilter() {
         return new FilmFilter(null, null, null, null, null);
     }
+
+    public static String filmRequestJson(String countries, String genres) {
+        return """
+                {
+                  "title": "film title",
+                  "releaseYear": 2000,
+                  "countries": %s,
+                  "description": "film description",
+                  "posterName": "00000000-0000-0000-0000-000000000000.jpg",
+                  "genres": %s,
+                  "actors": [{"name": "actor name"}],
+                  "directors": [{"name": "director name"}]
+                }
+                """.formatted(countries, genres);
+    }
 }

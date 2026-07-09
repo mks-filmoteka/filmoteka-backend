@@ -25,6 +25,7 @@ import static io.github.mksfilmoteka.backend.film.FilmTestData.*;
 import static io.github.mksfilmoteka.backend.util.TestUtil.OBJECT_MAPPER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -99,6 +100,36 @@ class FilmControllerTest {
     }
 
     @Test
+    void shouldThrowOnCreateIfCountryIsUnknown() throws Exception {
+        mockMvc.perform(post("/api/v1/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(filmRequestJson("[\"Atlantis\"]", "[\"Action\"]"))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(ErrorCode.BAD_REQUEST.name()))
+                .andExpect(jsonPath("$.message").value("Invalid value 'Atlantis' for field 'countries'"))
+                .andExpect(jsonPath("$.errorDetails[0].field").value("countries"))
+                .andExpect(jsonPath("$.errorDetails[0].message").value(containsString("UNITED_STATES")));
+
+        verify(filmService, never()).createFilm(any(FilmRequest.class));
+    }
+
+    @Test
+    void shouldThrowOnCreateIfGenreIsUnknown() throws Exception {
+        mockMvc.perform(post("/api/v1/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(filmRequestJson("[\"United States\"]", "[\"Bad Genre\"]"))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(ErrorCode.BAD_REQUEST.name()))
+                .andExpect(jsonPath("$.message").value("Invalid value 'Bad Genre' for field 'genres'"))
+                .andExpect(jsonPath("$.errorDetails[0].field").value("genres"))
+                .andExpect(jsonPath("$.errorDetails[0].message").value(containsString("ACTION")));
+
+        verify(filmService, never()).createFilm(any(FilmRequest.class));
+    }
+
+    @Test
     void shouldFindFilmById() throws Exception {
         when(filmService.findById(FILM_ID)).thenReturn(detailedFilmResponseFull());
 
@@ -120,6 +151,15 @@ class FilmControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(message))
                 .andExpect(jsonPath("$.code").value(ErrorCode.NOT_FOUND.name()));
+    }
+
+    @Test
+    void shouldThrowWithDetailsIfFilmIdIsInvalid() throws Exception {
+        mockMvc.perform(get("/api/v1/films/{id}", "not-a-number"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(ErrorCode.BAD_REQUEST.name()))
+                .andExpect(jsonPath("$.errorDetails[0].field").value("id"))
+                .andExpect(jsonPath("$.errorDetails[0].message").value("Expected type: Long"));
     }
 
     @Test
