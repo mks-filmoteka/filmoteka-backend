@@ -19,7 +19,7 @@
     <properties>
         <java.version>25</java.version>
         <testcontainers.version>1.20.4</testcontainers.version>
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
     </properties>
 
     <dependencyManagement>
