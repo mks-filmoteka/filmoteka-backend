@@ -231,10 +231,21 @@ class FilmServiceTest {
     }
 
     @Test
-    void shouldDeleteFilmIfExists() {
+    void shouldDeleteFilm() {
+        Film film = loadedFilm();
+        when(filmRepository.findById(FILM_ID)).thenReturn(Optional.of(film));
         filmService.deleteFilm(FILM_ID);
 
-        verify(filmRepository).deleteById(FILM_ID);
+        verify(filmRepository).delete(film);
+    }
+
+    @Test
+    void shouldThrowOnDeleteIfNotExists() {
+        when(filmRepository.findById(FILM_ID)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> filmService.deleteFilm(FILM_ID));
+
+        verify(filmRepository, never()).delete(any(Film.class));
     }
 
     private static Answer<Void> updateTitleOnly() {

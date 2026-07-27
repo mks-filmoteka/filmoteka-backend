@@ -101,7 +101,8 @@ public class FilmService {
 
     @Transactional
     public void deleteFilm(Long id) {
-        filmRepository.deleteById(id);
+        Film film = getFilmOrThrow(id);
+        filmRepository.delete(film);
         log.info("Deleted film id={}", id);
     }
 
