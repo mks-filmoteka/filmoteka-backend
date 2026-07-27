@@ -93,6 +93,16 @@ public class GlobalExceptionHandler {
                 .body(buildResponse(message, request, ErrorCode.BAD_REQUEST, errorDetails));
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(
+            BadRequestException ex, HttpServletRequest request) {
+
+        log.warn("Bad request. path={}, message={}", request.getRequestURI(), ex.getMessage());
+
+        return ResponseEntity.badRequest()
+                .body(buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request, ErrorCode.BAD_REQUEST));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(
             Exception ex, HttpServletRequest request) {

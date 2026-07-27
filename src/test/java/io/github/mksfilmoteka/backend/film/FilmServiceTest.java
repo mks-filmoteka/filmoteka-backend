@@ -2,10 +2,12 @@ package io.github.mksfilmoteka.backend.film;
 
 import io.github.mksfilmoteka.backend.actor.ActorService;
 import io.github.mksfilmoteka.backend.common.PageResponse;
+import io.github.mksfilmoteka.backend.common.exception.BadRequestException;
 import io.github.mksfilmoteka.backend.common.exception.ConflictException;
 import io.github.mksfilmoteka.backend.common.exception.ResourceNotFoundException;
 import io.github.mksfilmoteka.backend.director.DirectorService;
 import io.github.mksfilmoteka.backend.film.dto.DetailedFilmResponse;
+import io.github.mksfilmoteka.backend.film.dto.FilmFilter;
 import io.github.mksfilmoteka.backend.film.dto.FilmRequest;
 import io.github.mksfilmoteka.backend.film.dto.FilmResponse;
 import org.junit.jupiter.api.Test;
@@ -16,10 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
@@ -183,6 +182,15 @@ class FilmServiceTest {
 
         verify(filmRepository).findAll(ArgumentMatchers.<Specification<Film>>any(), eq(pageable));
         verify(filmMapper).filmsToFilmResponses(List.of());
+    }
+
+    @Test
+    void shouldThrowForUnsupportedSortField() {
+        Pageable pageable = PageRequest.of(0, 100, Sort.by("test"));
+        FilmFilter filter = emptyFilmFilter();
+        assertThrows(BadRequestException.class, () -> filmService.getFilms(filter, pageable));
+
+        verifyNoInteractions(filmRepository);
     }
 
     @Test

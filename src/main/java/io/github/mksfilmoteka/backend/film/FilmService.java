@@ -2,6 +2,7 @@ package io.github.mksfilmoteka.backend.film;
 
 import io.github.mksfilmoteka.backend.actor.ActorService;
 import io.github.mksfilmoteka.backend.common.PageResponse;
+import io.github.mksfilmoteka.backend.common.exception.BadRequestException;
 import io.github.mksfilmoteka.backend.common.exception.ConflictException;
 import io.github.mksfilmoteka.backend.common.exception.ResourceNotFoundException;
 import io.github.mksfilmoteka.backend.director.DirectorService;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -30,8 +32,16 @@ public class FilmService {
     private final DirectorService directorService;
     private final FilmMapper filmMapper;
 
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("title", "releaseYear", "id");
+
     public PageResponse<FilmResponse> getFilms(FilmFilter filter, Pageable pageable) {
         log.debug("Searching films. filter={}, pageable={}", filter, pageable);
+
+        pageable.getSort().forEach(order -> {
+            if (!ALLOWED_SORT_FIELDS.contains(order.getProperty())) {
+                throw new BadRequestException("Unsupported sort field: " + order.getProperty());
+            }
+        });
 
         Specification<Film> specification = FilmSpecification.withFilters(filter);
         Page<Film> page = filmRepository.findAll(specification, pageable);
