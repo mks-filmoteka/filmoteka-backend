@@ -1,6 +1,7 @@
 package io.github.mksfilmoteka.backend.film;
 
 import io.github.mksfilmoteka.backend.common.PageResponse;
+import io.github.mksfilmoteka.backend.common.exception.BadRequestException;
 import io.github.mksfilmoteka.backend.common.exception.ConflictException;
 import io.github.mksfilmoteka.backend.common.exception.ErrorCode;
 import io.github.mksfilmoteka.backend.common.exception.ResourceNotFoundException;
@@ -235,6 +236,18 @@ class FilmControllerTest {
         assertThat(titleOrder.getDirection()).isEqualTo(Sort.Direction.DESC);
         assertThat(idOrder).isNotNull();
         assertThat(idOrder.getDirection()).isEqualTo(Sort.Direction.ASC);
+    }
+
+    @Test
+    void shouldThrowForUnsupportedSortField() throws Exception {
+        when(filmService.getFilms(any(FilmFilter.class), any(Pageable.class)))
+                .thenThrow(new BadRequestException("Unsupported sort field: test"));
+
+        mockMvc.perform(get("/api/v1/films")
+                        .param("sort", "test,asc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(ErrorCode.BAD_REQUEST.name()))
+                .andExpect(jsonPath("$.message").value("Unsupported sort field: test"));
     }
 
     @Test
