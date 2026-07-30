@@ -1,4 +1,4 @@
-# Filmoteka Backend
+# Filmoteka Catalog
 
 Backend REST API for Filmoteka, an admin app for managing films, actors and directors.
 
@@ -27,7 +27,7 @@ The service stores film metadata in PostgreSQL. Poster image files are handled o
 Create the database:
 
 ```sql
-CREATE DATABASE filmoteka;
+CREATE DATABASE filmoteka_catalog;
 ```
 
 The `filmoteka` schema and tables are created by Flyway migrations on startup.
@@ -35,15 +35,17 @@ The `filmoteka` schema and tables are created by Flyway migrations on startup.
 Set database credentials:
 
 ```powershell
-$env:FILMOTEKA_USERNAME = "your_username"
-$env:FILMOTEKA_PASSWORD = "your_password"
+$env:DATASOURCE_URL = "your_database_url"
+$env:DATASOURCE_USERNAME = "your_username"
+$env:DATASOURCE_PASSWORD = "your_password"
 ```
 
 For bash:
 
 ```bash
-export FILMOTEKA_USERNAME=your_username
-export FILMOTEKA_PASSWORD=your_password
+export DATASOURCE_URL=your_database_url
+export DATASOURCE_USERNAME=your_username
+export DATASOURCE_PASSWORD=your_password
 ```
 
 Start the app:

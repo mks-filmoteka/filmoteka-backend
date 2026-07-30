@@ -37,4 +37,4 @@ jobs:
         run: ./mvnw -B verify
 
       - name: Build Docker image
-        run: docker build -t filmoteka-backend:ci .
+        run: docker build -t filmoteka-catalog:ci .
