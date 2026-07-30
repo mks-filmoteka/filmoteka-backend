@@ -11,14 +11,13 @@
     </parent>
 
     <groupId>io.github.mksfilmoteka</groupId>
-    <artifactId>filmoteka-backend</artifactId>
-    <version>1.0.0</version>
-    <name>filmoteka-backend</name>
-    <description>filmoteka-backend</description>
+    <artifactId>filmoteka-catalog</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+    <name>filmoteka-catalog</name>
+    <description>Filmoteka catalog service</description>
 
     <properties>
         <java.version>25</java.version>
-        <testcontainers.version>1.20.4</testcontainers.version>
         <mapstruct.version>1.6.3</mapstruct.version>
     </properties>
 
@@ -36,6 +35,7 @@
     <!--               DEPENDENCIES               -->
     <!-- ======================================== -->
     <dependencies>
+
         <!-- ============= Spring =============== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -99,20 +99,22 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
+            <artifactId>testcontainers-postgresql</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
+
         <!-- ============== Mapping ============== -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>${mapstruct.version}</version>
         </dependency>
+
         <!-- ============== Lombok =============== -->
         <dependency>
             <groupId>org.projectlombok</groupId>

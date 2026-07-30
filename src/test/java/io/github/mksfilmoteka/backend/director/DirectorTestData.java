@@ -7,7 +7,7 @@ import io.github.mksfilmoteka.backend.util.TestUtil;
 
 import static io.github.mksfilmoteka.backend.film.FilmTestData.filmResponse;
 
-public class DirectorTestData {
+public final class DirectorTestData {
 
     public static final String DIRECTOR_NAME = "director name";
     public static final long DIRECTOR_ID = 1L;

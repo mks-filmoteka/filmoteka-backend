@@ -12,7 +12,7 @@ import static io.github.mksfilmoteka.backend.director.DirectorTestData.directorR
 import static io.github.mksfilmoteka.backend.util.TestUtil.testListOf;
 import static io.github.mksfilmoteka.backend.util.TestUtil.testSetOf;
 
-public class FilmTestData {
+public final class FilmTestData {
 
     public static final long FILM_ID = 1L;
     public static final String FILM_TITLE = "film title";
