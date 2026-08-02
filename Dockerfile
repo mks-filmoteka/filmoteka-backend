@@ -1,23 +1,22 @@
-FROM eclipse-temurin:25-jdk AS build
+FROM maven:3.9.16-eclipse-temurin-25 AS build
 
 WORKDIR /app
 
-COPY .mvn .mvn
-COPY mvnw pom.xml ./
-
-RUN chmod +x mvnw
-RUN ./mvnw -q -DskipTests dependency:go-offline
-
+COPY pom.xml .
 COPY src src
 
-RUN ./mvnw -q -DskipTests package
+RUN mvn --no-transfer-progress -DskipTests package
 
 
 FROM eclipse-temurin:25-jre
 
 WORKDIR /app
 
-COPY --from=build /app/target/*.jar app.jar
+RUN groupadd --system filmoteka && useradd --system --gid filmoteka --no-create-home filmoteka
+
+COPY --from=build --chown=filmoteka:filmoteka /app/target/*.jar /app/app.jar
+
+USER filmoteka:filmoteka
 
 EXPOSE 8080
 
