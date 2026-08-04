@@ -35,6 +35,7 @@ public record FilmRequest(
         String description,
 
         @Schema(description = "Film poster name", example = "00000000-0000-0000-0000-000000000000.jpg")
+        @Size(max = 1000)
         @Pattern(regexp = "^[a-zA-Z0-9_-]+\\.(jpg|jpeg|png|webp)$",
                 message = "Poster file name must be a valid image file name")
         String posterName,

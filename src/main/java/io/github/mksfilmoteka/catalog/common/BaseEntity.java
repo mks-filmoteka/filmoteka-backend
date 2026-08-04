@@ -18,15 +18,10 @@ public abstract class BaseEntity {
     private Long id;
 
     @CreationTimestamp
-    @Column(name = "created_ts", updatable = false)
+    @Column(name = "created_ts", nullable = false, updatable = false)
     private LocalDateTime createdTs;
 
     @UpdateTimestamp
-    @Column(name = "updated_ts")
+    @Column(name = "updated_ts", nullable = false)
     private LocalDateTime updatedTs;
-
-    @PreUpdate
-    public void preUpdate() {
-        updatedTs = LocalDateTime.now();
-    }
 }

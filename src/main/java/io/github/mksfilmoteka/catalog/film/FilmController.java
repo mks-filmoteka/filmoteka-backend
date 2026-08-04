@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Films", description = "Operations related to films")
 @RestController
-@RequestMapping("api/v1/films")
+@RequestMapping("/api/v1/films")
 @RequiredArgsConstructor
 public class FilmController {
 
