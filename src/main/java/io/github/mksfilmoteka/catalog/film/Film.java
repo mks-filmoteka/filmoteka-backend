@@ -16,53 +16,61 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor(access = PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "film", uniqueConstraints = @UniqueConstraint(
-        columnNames = {"title", "release_year"}
-))
+@Table(
+        name = "film",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"title", "release_year"})
+)
 public class Film extends BaseEntity {
 
+    @Column(nullable = false)
     private String title;
 
-    @Column(name = "release_year")
+    @Column(name = "release_year", nullable = false)
     private Integer releaseYear;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     @CollectionTable(
             name = "film_countries",
-            joinColumns = @JoinColumn(name = "film_id")
+            joinColumns = @JoinColumn(name = "film_id", nullable = false),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"film_id", "country"}),
+            indexes = @Index(columnList = "country, film_id")
     )
-    @Column(name = "country")
+    @Column(name = "country", nullable = false, length = 100)
     private List<Country> countries = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     @CollectionTable(
             name = "film_genres",
-            joinColumns = @JoinColumn(name = "film_id")
+            joinColumns = @JoinColumn(name = "film_id", nullable = false),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"film_id", "genre"}),
+            indexes = @Index(columnList = "genre, film_id")
     )
-    @Column(name = "genre")
+    @Column(name = "genre", nullable = false, length = 100)
     private List<Genre> genres = new ArrayList<>();
 
-    @Column(columnDefinition = "text")
+    @Column(nullable = false, length = 1000)
     private String description;
 
-    @Column(name = "poster_name")
+    @Column(name = "poster_name", length = 1000)
     private String posterName;
 
     @ManyToMany
     @JoinTable(
             name = "film_actor",
-            joinColumns = @JoinColumn(name = "film_id"),
-            inverseJoinColumns = @JoinColumn(name = "actor_id")
+            joinColumns = @JoinColumn(name = "film_id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "actor_id", nullable = false),
+            indexes = @Index(columnList = "actor_id")
     )
     private List<Actor> actors = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
             name = "film_director",
-            joinColumns = @JoinColumn(name = "film_id"),
-            inverseJoinColumns = @JoinColumn(name = "director_id")
+            joinColumns = @JoinColumn(name = "film_id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "director_id", nullable = false),
+            indexes = @Index(columnList = "director_id")
     )
     private List<Director> directors = new ArrayList<>();
 

@@ -2,6 +2,7 @@ package io.github.mksfilmoteka.catalog.director;
 
 import io.github.mksfilmoteka.catalog.common.BaseEntity;
 import io.github.mksfilmoteka.catalog.film.Film;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
@@ -19,6 +20,7 @@ import java.util.List;
 @Table(name = "director", uniqueConstraints = @UniqueConstraint(columnNames = {"name"}))
 public class Director extends BaseEntity {
 
+    @Column(nullable = false, length = 100)
     private String name;
 
     @ManyToMany(mappedBy = "directors")

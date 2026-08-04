@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Directors", description = "Operations related to directors")
 @RestController
-@RequestMapping("api/v1/directors")
+@RequestMapping("/api/v1/directors")
 @RequiredArgsConstructor
 public class DirectorController {
 
