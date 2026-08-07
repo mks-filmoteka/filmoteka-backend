@@ -1,6 +1,5 @@
 package io.github.mksfilmoteka.catalog;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.github.mksfilmoteka.catalog.common.exception.ErrorCode;
 import io.github.mksfilmoteka.catalog.config.RepositoryTestConfig;
 import io.github.mksfilmoteka.catalog.film.Country;
@@ -12,11 +11,12 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import tools.jackson.databind.JsonNode;
 
 import static io.github.mksfilmoteka.catalog.actor.ActorTestData.ACTOR_NAME;
 import static io.github.mksfilmoteka.catalog.director.DirectorTestData.DIRECTOR_NAME;
 import static io.github.mksfilmoteka.catalog.film.FilmTestData.*;
-import static io.github.mksfilmoteka.catalog.util.TestUtil.OBJECT_MAPPER;
+import static io.github.mksfilmoteka.catalog.util.TestUtil.JSON_MAPPER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -33,7 +33,7 @@ class FilmotekaCatalogApplicationTest {
 
     @Test
     void shouldCreateFilmAndReadItThroughApi() throws Exception {
-        String filmRequest = OBJECT_MAPPER.writeValueAsString(filmRequestFull());
+        String filmRequest = JSON_MAPPER.writeValueAsString(filmRequestFull());
 
         String createResponse = mockMvc.perform(post("/api/v1/films")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -51,7 +51,7 @@ class FilmotekaCatalogApplicationTest {
                 .getResponse()
                 .getContentAsString();
 
-        JsonNode createdFilm = OBJECT_MAPPER.readTree(createResponse);
+        JsonNode createdFilm = JSON_MAPPER.readTree(createResponse);
         long filmId = createdFilm.get("id").asLong();
         long actorId = createdFilm.get("actors").get(0).get("id").asLong();
         long directorId = createdFilm.get("directors").get(0).get("id").asLong();
