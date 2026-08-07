@@ -1,6 +1,6 @@
 package io.github.mksfilmoteka.catalog.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class TestUtil {
 
-    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
+    public static final JsonMapper JSON_MAPPER = JsonMapper.builder().findAndAddModules().build();
 
     @SafeVarargs
     public static <T> Set<T> testSetOf(T... items) {

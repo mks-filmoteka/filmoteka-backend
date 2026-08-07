@@ -23,7 +23,7 @@ import java.util.List;
 import static io.github.mksfilmoteka.catalog.actor.ActorTestData.ACTOR_NAME;
 import static io.github.mksfilmoteka.catalog.director.DirectorTestData.DIRECTOR_NAME;
 import static io.github.mksfilmoteka.catalog.film.FilmTestData.*;
-import static io.github.mksfilmoteka.catalog.util.TestUtil.OBJECT_MAPPER;
+import static io.github.mksfilmoteka.catalog.util.TestUtil.JSON_MAPPER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
@@ -49,7 +49,7 @@ class FilmControllerTest {
 
         mockMvc.perform(post("/api/v1/films")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(OBJECT_MAPPER.writeValueAsString(filmRequestFull()))
+                        .content(JSON_MAPPER.writeValueAsString(filmRequestFull()))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(FILM_ID))
@@ -72,7 +72,7 @@ class FilmControllerTest {
 
         mockMvc.perform(post("/api/v1/films")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(OBJECT_MAPPER.writeValueAsString(filmRequestFull()))
+                        .content(JSON_MAPPER.writeValueAsString(filmRequestFull()))
                 )
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value(message))
@@ -84,7 +84,7 @@ class FilmControllerTest {
     void shouldThrowOnCreateIfInvalidRequest() throws Exception {
         mockMvc.perform(post("/api/v1/films")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(OBJECT_MAPPER.writeValueAsString(invalidFilmRequest()))
+                        .content(JSON_MAPPER.writeValueAsString(invalidFilmRequest()))
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorCode.VALIDATION_FAILED.name()))
@@ -257,7 +257,7 @@ class FilmControllerTest {
         mockMvc.perform(
                         put("/api/v1/films/{id}", FILM_ID)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(OBJECT_MAPPER.writeValueAsString(filmRequestFull()))
+                                .content(JSON_MAPPER.writeValueAsString(filmRequestFull()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(FILM_ID))
@@ -275,7 +275,7 @@ class FilmControllerTest {
         mockMvc.perform(
                         put("/api/v1/films/{id}", FILM_ID)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(OBJECT_MAPPER.writeValueAsString(filmRequestFull()))
+                                .content(JSON_MAPPER.writeValueAsString(filmRequestFull()))
                 )
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value(message))
@@ -289,7 +289,7 @@ class FilmControllerTest {
         mockMvc.perform(
                         put("/api/v1/films/{id}", FILM_ID)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(OBJECT_MAPPER.writeValueAsString(invalidFilmRequest()))
+                                .content(JSON_MAPPER.writeValueAsString(invalidFilmRequest()))
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorCode.VALIDATION_FAILED.name()))

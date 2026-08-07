@@ -12,7 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static io.github.mksfilmoteka.catalog.director.DirectorTestData.*;
-import static io.github.mksfilmoteka.catalog.util.TestUtil.OBJECT_MAPPER;
+import static io.github.mksfilmoteka.catalog.util.TestUtil.JSON_MAPPER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -59,7 +59,7 @@ class DirectorControllerTest {
         mockMvc.perform(
                         put("/api/v1/directors/{id}", DIRECTOR_ID)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(OBJECT_MAPPER.writeValueAsString(directorRequest()))
+                                .content(JSON_MAPPER.writeValueAsString(directorRequest()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(DIRECTOR_ID))
@@ -77,7 +77,7 @@ class DirectorControllerTest {
         mockMvc.perform(
                         put("/api/v1/directors/{id}", DIRECTOR_ID)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(OBJECT_MAPPER.writeValueAsString(directorRequest()))
+                                .content(JSON_MAPPER.writeValueAsString(directorRequest()))
                 )
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value(message))
@@ -91,7 +91,7 @@ class DirectorControllerTest {
         mockMvc.perform(
                         put("/api/v1/directors/{id}", DIRECTOR_ID)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(OBJECT_MAPPER.writeValueAsString(new DirectorRequest("")))
+                                .content(JSON_MAPPER.writeValueAsString(new DirectorRequest("")))
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorCode.VALIDATION_FAILED.name()))

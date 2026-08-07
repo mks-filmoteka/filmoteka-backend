@@ -12,7 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static io.github.mksfilmoteka.catalog.actor.ActorTestData.*;
-import static io.github.mksfilmoteka.catalog.util.TestUtil.OBJECT_MAPPER;
+import static io.github.mksfilmoteka.catalog.util.TestUtil.JSON_MAPPER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -59,7 +59,7 @@ class ActorControllerTest {
         mockMvc.perform(
                         put("/api/v1/actors/{id}", ACTOR_ID)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(OBJECT_MAPPER.writeValueAsString(actorRequest()))
+                                .content(JSON_MAPPER.writeValueAsString(actorRequest()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ACTOR_ID))
@@ -77,7 +77,7 @@ class ActorControllerTest {
         mockMvc.perform(
                         put("/api/v1/actors/{id}", ACTOR_ID)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(OBJECT_MAPPER.writeValueAsString(actorRequest()))
+                                .content(JSON_MAPPER.writeValueAsString(actorRequest()))
                 )
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value(message))
@@ -91,7 +91,7 @@ class ActorControllerTest {
         mockMvc.perform(
                         put("/api/v1/actors/{id}", ACTOR_ID)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(OBJECT_MAPPER.writeValueAsString(new ActorRequest("")))
+                                .content(JSON_MAPPER.writeValueAsString(new ActorRequest("")))
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorCode.VALIDATION_FAILED.name()))
