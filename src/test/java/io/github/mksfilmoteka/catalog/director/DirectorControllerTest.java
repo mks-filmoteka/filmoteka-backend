@@ -1,5 +1,7 @@
 package io.github.mksfilmoteka.catalog.director;
 
+import io.github.mksfilmoteka.catalog.auth.KeycloakRealmRoleConverter;
+import io.github.mksfilmoteka.catalog.auth.SecurityConfig;
 import io.github.mksfilmoteka.catalog.common.exception.ConflictException;
 import io.github.mksfilmoteka.catalog.common.exception.ErrorCode;
 import io.github.mksfilmoteka.catalog.common.exception.ResourceNotFoundException;
@@ -7,12 +9,14 @@ import io.github.mksfilmoteka.catalog.director.dto.DirectorRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static io.github.mksfilmoteka.catalog.director.DirectorTestData.*;
 import static io.github.mksfilmoteka.catalog.util.TestUtil.JSON_MAPPER;
+import static io.github.mksfilmoteka.catalog.util.TestUtil.adminJwt;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -21,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(DirectorController.class)
+@Import({SecurityConfig.class, KeycloakRealmRoleConverter.class})
 class DirectorControllerTest {
 
     @MockitoBean
@@ -58,6 +63,7 @@ class DirectorControllerTest {
 
         mockMvc.perform(
                         put("/api/v1/directors/{id}", DIRECTOR_ID)
+                                .with(adminJwt())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(JSON_MAPPER.writeValueAsString(directorRequest()))
                 )
@@ -76,6 +82,7 @@ class DirectorControllerTest {
 
         mockMvc.perform(
                         put("/api/v1/directors/{id}", DIRECTOR_ID)
+                                .with(adminJwt())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(JSON_MAPPER.writeValueAsString(directorRequest()))
                 )
@@ -90,6 +97,7 @@ class DirectorControllerTest {
     void shouldThrowOnUpdateIfInvalidRequest() throws Exception {
         mockMvc.perform(
                         put("/api/v1/directors/{id}", DIRECTOR_ID)
+                                .with(adminJwt())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(JSON_MAPPER.writeValueAsString(new DirectorRequest("")))
                 )
@@ -103,7 +111,7 @@ class DirectorControllerTest {
     @Test
     void shouldDeleteDirector() throws Exception {
 
-        mockMvc.perform(delete("/api/v1/directors/{id}", DIRECTOR_ID))
+        mockMvc.perform(delete("/api/v1/directors/{id}", DIRECTOR_ID).with(adminJwt()))
                 .andExpect(status().isNoContent());
 
         verify(directorService).deleteDirector(DIRECTOR_ID);
@@ -114,7 +122,7 @@ class DirectorControllerTest {
         String message = "Director with id " + DIRECTOR_ID + " not found";
         doThrow(new ResourceNotFoundException(message)).when(directorService).deleteDirector(DIRECTOR_ID);
 
-        mockMvc.perform(delete("/api/v1/directors/{id}", DIRECTOR_ID))
+        mockMvc.perform(delete("/api/v1/directors/{id}", DIRECTOR_ID).with(adminJwt()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(message))
                 .andExpect(jsonPath("$.code").value(ErrorCode.NOT_FOUND.name()));

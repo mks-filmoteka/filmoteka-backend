@@ -1,5 +1,7 @@
 package io.github.mksfilmoteka.catalog.film;
 
+import io.github.mksfilmoteka.catalog.auth.KeycloakRealmRoleConverter;
+import io.github.mksfilmoteka.catalog.auth.SecurityConfig;
 import io.github.mksfilmoteka.catalog.common.PageResponse;
 import io.github.mksfilmoteka.catalog.common.exception.BadRequestException;
 import io.github.mksfilmoteka.catalog.common.exception.ConflictException;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
@@ -24,6 +27,7 @@ import static io.github.mksfilmoteka.catalog.actor.ActorTestData.ACTOR_NAME;
 import static io.github.mksfilmoteka.catalog.director.DirectorTestData.DIRECTOR_NAME;
 import static io.github.mksfilmoteka.catalog.film.FilmTestData.*;
 import static io.github.mksfilmoteka.catalog.util.TestUtil.JSON_MAPPER;
+import static io.github.mksfilmoteka.catalog.util.TestUtil.adminJwt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
@@ -35,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(FilmController.class)
+@Import({SecurityConfig.class, KeycloakRealmRoleConverter.class})
 class FilmControllerTest {
 
     @MockitoBean
@@ -48,6 +53,7 @@ class FilmControllerTest {
         when(filmService.createFilm(any(FilmRequest.class))).thenReturn(detailedFilmResponseFull());
 
         mockMvc.perform(post("/api/v1/films")
+                        .with(adminJwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JSON_MAPPER.writeValueAsString(filmRequestFull()))
                 )
@@ -71,6 +77,7 @@ class FilmControllerTest {
         when(filmService.createFilm(any(FilmRequest.class))).thenThrow(new ConflictException(message));
 
         mockMvc.perform(post("/api/v1/films")
+                        .with(adminJwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JSON_MAPPER.writeValueAsString(filmRequestFull()))
                 )
@@ -83,6 +90,7 @@ class FilmControllerTest {
     @Test
     void shouldThrowOnCreateIfInvalidRequest() throws Exception {
         mockMvc.perform(post("/api/v1/films")
+                        .with(adminJwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JSON_MAPPER.writeValueAsString(invalidFilmRequest()))
                 )
@@ -103,6 +111,7 @@ class FilmControllerTest {
     @Test
     void shouldThrowOnCreateIfCountryIsUnknown() throws Exception {
         mockMvc.perform(post("/api/v1/films")
+                        .with(adminJwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(filmRequestJson("[\"Atlantis\"]", "[\"Action\"]"))
                 )
@@ -118,6 +127,7 @@ class FilmControllerTest {
     @Test
     void shouldThrowOnCreateIfGenreIsUnknown() throws Exception {
         mockMvc.perform(post("/api/v1/films")
+                        .with(adminJwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(filmRequestJson("[\"United States\"]", "[\"Bad Genre\"]"))
                 )
@@ -256,6 +266,7 @@ class FilmControllerTest {
 
         mockMvc.perform(
                         put("/api/v1/films/{id}", FILM_ID)
+                                .with(adminJwt())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(JSON_MAPPER.writeValueAsString(filmRequestFull()))
                 )
@@ -274,6 +285,7 @@ class FilmControllerTest {
 
         mockMvc.perform(
                         put("/api/v1/films/{id}", FILM_ID)
+                                .with(adminJwt())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(JSON_MAPPER.writeValueAsString(filmRequestFull()))
                 )
@@ -288,6 +300,7 @@ class FilmControllerTest {
     void shouldThrowOnUpdateIfInvalidRequest() throws Exception {
         mockMvc.perform(
                         put("/api/v1/films/{id}", FILM_ID)
+                                .with(adminJwt())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(JSON_MAPPER.writeValueAsString(invalidFilmRequest()))
                 )
@@ -310,7 +323,7 @@ class FilmControllerTest {
     @Test
     void shouldDeleteFilm() throws Exception {
 
-        mockMvc.perform(delete("/api/v1/films/{id}", FILM_ID))
+        mockMvc.perform(delete("/api/v1/films/{id}", FILM_ID).with(adminJwt()))
                 .andExpect(status().isNoContent());
 
         verify(filmService).deleteFilm(FILM_ID);
@@ -321,7 +334,7 @@ class FilmControllerTest {
         String message = "Film with id " + FILM_ID + " not found";
         doThrow(new ResourceNotFoundException(message)).when(filmService).deleteFilm(FILM_ID);
 
-        mockMvc.perform(delete("/api/v1/films/{id}", FILM_ID))
+        mockMvc.perform(delete("/api/v1/films/{id}", FILM_ID).with(adminJwt()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(message))
                 .andExpect(jsonPath("$.code").value(ErrorCode.NOT_FOUND.name()));

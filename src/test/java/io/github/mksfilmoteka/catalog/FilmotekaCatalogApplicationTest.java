@@ -1,5 +1,7 @@
 package io.github.mksfilmoteka.catalog;
 
+import io.github.mksfilmoteka.catalog.auth.KeycloakRealmRoleConverter;
+import io.github.mksfilmoteka.catalog.auth.SecurityConfig;
 import io.github.mksfilmoteka.catalog.common.exception.ErrorCode;
 import io.github.mksfilmoteka.catalog.config.RepositoryTestConfig;
 import io.github.mksfilmoteka.catalog.film.Country;
@@ -17,6 +19,7 @@ import static io.github.mksfilmoteka.catalog.actor.ActorTestData.ACTOR_NAME;
 import static io.github.mksfilmoteka.catalog.director.DirectorTestData.DIRECTOR_NAME;
 import static io.github.mksfilmoteka.catalog.film.FilmTestData.*;
 import static io.github.mksfilmoteka.catalog.util.TestUtil.JSON_MAPPER;
+import static io.github.mksfilmoteka.catalog.util.TestUtil.adminJwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -24,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = FilmotekaCatalogApplication.class)
 @AutoConfigureMockMvc
-@Import(RepositoryTestConfig.class)
+@Import({RepositoryTestConfig.class, SecurityConfig.class, KeycloakRealmRoleConverter.class})
 @Testcontainers(disabledWithoutDocker = true)
 class FilmotekaCatalogApplicationTest {
 
@@ -36,6 +39,7 @@ class FilmotekaCatalogApplicationTest {
         String filmRequest = JSON_MAPPER.writeValueAsString(filmRequestFull());
 
         String createResponse = mockMvc.perform(post("/api/v1/films")
+                        .with(adminJwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(filmRequest))
                 .andExpect(status().isCreated())
@@ -87,6 +91,7 @@ class FilmotekaCatalogApplicationTest {
                 .andExpect(jsonPath("$.content[0].title").value(FILM_TITLE));
 
         mockMvc.perform(post("/api/v1/films")
+                        .with(adminJwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(filmRequest))
                 .andExpect(status().isConflict())
