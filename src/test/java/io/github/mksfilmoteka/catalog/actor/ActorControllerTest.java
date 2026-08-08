@@ -1,18 +1,22 @@
 package io.github.mksfilmoteka.catalog.actor;
 
 import io.github.mksfilmoteka.catalog.actor.dto.ActorRequest;
+import io.github.mksfilmoteka.catalog.auth.KeycloakRealmRoleConverter;
+import io.github.mksfilmoteka.catalog.auth.SecurityConfig;
 import io.github.mksfilmoteka.catalog.common.exception.ConflictException;
 import io.github.mksfilmoteka.catalog.common.exception.ErrorCode;
 import io.github.mksfilmoteka.catalog.common.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static io.github.mksfilmoteka.catalog.actor.ActorTestData.*;
 import static io.github.mksfilmoteka.catalog.util.TestUtil.JSON_MAPPER;
+import static io.github.mksfilmoteka.catalog.util.TestUtil.adminJwt;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -21,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ActorController.class)
+@Import({SecurityConfig.class, KeycloakRealmRoleConverter.class})
 class ActorControllerTest {
 
     @MockitoBean
@@ -58,6 +63,7 @@ class ActorControllerTest {
 
         mockMvc.perform(
                         put("/api/v1/actors/{id}", ACTOR_ID)
+                                .with(adminJwt())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(JSON_MAPPER.writeValueAsString(actorRequest()))
                 )
@@ -76,6 +82,7 @@ class ActorControllerTest {
 
         mockMvc.perform(
                         put("/api/v1/actors/{id}", ACTOR_ID)
+                                .with(adminJwt())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(JSON_MAPPER.writeValueAsString(actorRequest()))
                 )
@@ -90,6 +97,7 @@ class ActorControllerTest {
     void shouldThrowOnUpdateIfInvalidRequest() throws Exception {
         mockMvc.perform(
                         put("/api/v1/actors/{id}", ACTOR_ID)
+                                .with(adminJwt())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(JSON_MAPPER.writeValueAsString(new ActorRequest("")))
                 )
@@ -103,7 +111,7 @@ class ActorControllerTest {
     @Test
     void shouldDeleteActor() throws Exception {
 
-        mockMvc.perform(delete("/api/v1/actors/{id}", ACTOR_ID))
+        mockMvc.perform(delete("/api/v1/actors/{id}", ACTOR_ID).with(adminJwt()))
                 .andExpect(status().isNoContent());
 
         verify(actorService).deleteActor(ACTOR_ID);
@@ -114,7 +122,7 @@ class ActorControllerTest {
         String message = "Actor with id " + ACTOR_ID + " not found";
         doThrow(new ResourceNotFoundException(message)).when(actorService).deleteActor(ACTOR_ID);
 
-        mockMvc.perform(delete("/api/v1/actors/{id}", ACTOR_ID))
+        mockMvc.perform(delete("/api/v1/actors/{id}", ACTOR_ID).with(adminJwt()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(message))
                 .andExpect(jsonPath("$.code").value(ErrorCode.NOT_FOUND.name()));
